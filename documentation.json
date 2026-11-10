@@ -1,0 +1,60 @@
+{
+  "language": "en",
+  "documents": [
+    {
+      "path": "CHANGELOG.md",
+      "purpose": "Changelog"
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "purpose": "Contributing"
+    },
+    {
+      "path": "INSTALL.md",
+      "purpose": "Installation"
+    },
+    {
+      "path": "README.md",
+      "purpose": "DrG Media"
+    },
+    {
+      "path": "THIRD_PARTY_NOTICES.md",
+      "purpose": "Third-party notices"
+    },
+    {
+      "path": "docs/api.md",
+      "purpose": "Private service API"
+    },
+    {
+      "path": "docs/group-profiles.md",
+      "purpose": "Group names and avatars"
+    },
+    {
+      "path": "docs/live-bindings.md",
+      "purpose": "Source bindings and archive identity"
+    },
+    {
+      "path": "docs/stickers.md",
+      "purpose": "Stickers, voice messages and video notes"
+    },
+    {
+      "path": "docs/storage-transfer.md",
+      "purpose": "Storage transfer and backup"
+    },
+    {
+      "path": "docs/sync-progress.md",
+      "purpose": "Progress and cleanup"
+    },
+    {
+      "path": "docs/telegram-limits.md",
+      "purpose": "Telegram limits and download recovery"
+    },
+    {
+      "path": "docs/updates.md",
+      "purpose": "Updates and compatibility"
+    }
+  ],
+  "third_party_roots": [
+    "licenses/"
+  ]
+}

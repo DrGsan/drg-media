@@ -1,0 +1,43 @@
+services:
+  api:
+    image: family-photo-image:local
+    container_name: family-photo-api
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      FP_DATA_DIR: /data
+    ports:
+      - "127.0.0.1:8090:8090"
+    volumes:
+      - archive-data:/data
+    healthcheck:
+      test: ["CMD", "timeout", "--kill-after=1s", "3s", "/bin/bash", "/app/family_photo/healthcheck.sh"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: ["ALL"]
+    logging:
+      driver: json-file
+      options: {max-size: "10m", max-file: "3"}
+  worker:
+    image: family-photo-image:local
+    container_name: family-photo-worker
+    restart: unless-stopped
+    command: ["family-photo", "worker"]
+    env_file: .env
+    environment:
+      FP_DATA_DIR: /data
+    volumes:
+      - archive-data:/data
+    depends_on:
+      api:
+        condition: service_healthy
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: ["ALL"]
+    logging:
+      driver: json-file
+      options: {max-size: "10m", max-file: "3"}
+volumes:
+  archive-data:

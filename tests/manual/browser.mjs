@@ -1,0 +1,71 @@
+import {resolve} from 'node:path';
+import {pathToFileURL} from 'node:url';
+import {mkdir,readFile} from 'node:fs/promises';
+const siteRoot=resolve(process.env.FP_SITE_REPO||'../drg-space');
+const {chromium}=await import(pathToFileURL(resolve(siteRoot,'node_modules/playwright/index.mjs')));
+const artifacts=resolve('artifacts');await mkdir(artifacts,{recursive:true});
+import assert from 'node:assert/strict';
+import {createHmac} from 'node:crypto';
+const site='http://127.0.0.1:8017';
+function totp(secret){let bits='';for(const char of secret)bits+='ABCDEFGHIJKLMNOPQRSTUVWXYZ234567'.indexOf(char).toString(2).padStart(5,'0');const bytes=[];for(let i=0;i+8<=bits.length;i+=8)bytes.push(parseInt(bits.slice(i,i+8),2));const counter=Buffer.alloc(8);counter.writeBigUInt64BE(BigInt(Math.floor(Date.now()/30000)));const hash=createHmac('sha1',Buffer.from(bytes)).update(counter).digest(),offset=hash[19]&15;return String((hash.readUInt32BE(offset)&0x7fffffff)%1000000).padStart(6,'0');}
+async function api(context,path,method='GET',body,csrf=''){
+ const response=await context.request.fetch(site+'/api'+path,{method,headers:{Origin:site,'X-CSRF-Token':csrf},...(body===undefined?{}:{data:body})});
+ const data=await response.json();assert(response.ok(),path+' '+response.status()+' '+JSON.stringify(data));return data;
+}
+async function enroll(context,csrf,password){const start=await api(context,'/2fa/enroll','POST',{password},csrf);await api(context,'/2fa/confirm','POST',{code:totp(start.secret)},csrf);return (await api(context,'/2fa/activate','POST',{saved_recovery_codes:true},csrf)).csrf;}
+const browser=await chromium.launch({headless:true});
+const context=await browser.newContext({viewport:{width:1440,height:1000},locale:'ru-RU'}),page=await context.newPage(),errors=[];
+page.on('pageerror',e=>errors.push(e.message));
+await page.route('**/api/widgets/**/rss',r=>r.fulfill({json:{items:[],errors:[]}}));
+let memberContext;
+try{
+ let csrf=(await api(context,'/setup','POST',{login:'fpadmin',password:'Owner-password-123',token:'browser-test-setup-key'})).csrf;
+ csrf=await enroll(context,csrf,'Owner-password-123');
+ await api(context,'/admin/access/unlock','POST',{password:'Owner-password-123'},csrf);
+ const ordinary=await api(context,'/social/families','POST',{name:'Fixture family'},csrf);
+ await api(context,'/chat/'+ordinary.id+'/messages','POST',{body:'Ordinary chat fixture',attachments:[],client_id:'ordinary-fixture'},csrf);
+ await page.goto(site);await page.locator('[data-view=settings]').click();
+ await page.locator('[data-preference-key=modules] > summary').click();
+ const toggle=page.locator('#modules-form [name=family_photos]');await toggle.waitFor();
+ assert.equal(await toggle.isChecked(),false);await toggle.check();
+ await page.locator('#modules-form button[type=submit]').click();
+ await page.locator('[data-view=family_photos]').click();
+ await page.locator('.fp-tile').first().waitFor();assert.equal(await page.locator('.fp-tile').count(),4);
+ const groups=await api(context,'/family-photos/groups');assert.equal(groups.items.length,3);assert(!JSON.stringify(groups).includes('browser-service-token'));
+ const calendar=await api(context,'/family-photos/groups/-1001/media-index?timezone=UTC');assert(calendar.items.length>0);
+ await page.locator('.fp-tile').first().click();await page.locator('.fp-viewer-stage img').waitFor();
+ assert.match(await page.locator('.fp-viewer-controls').innerText(),/1 \/ 4/);
+ await page.getByRole('button',{name:'Следующее фото',exact:true}).click();assert.match(await page.locator('.fp-viewer-controls').innerText(),/2 \/ 4/);
+ await page.getByRole('button',{name:'Закрыть',exact:true}).click();
+ await page.locator('[data-fp-group-select]').selectOption('-1002');await page.waitForFunction(()=>document.querySelectorAll('.fp-tile').length===2);
+ await page.locator('[data-fp-group-select]').selectOption('export:abcdef0123456789');await page.waitForFunction(()=>document.querySelectorAll('.fp-tile').length===1);
+ await page.locator('[data-fp-chat]').click();
+ await page.getByText('Семейное сообщение 7',{exact:true}).waitFor();
+ await page.locator('[data-chat-rooms] [data-room="'+ordinary.id+'"]').waitFor();
+ assert.equal((await context.request.post(site+'/api/family-photos/groups/export:abcdef0123456789/messages',{headers:{Origin:site,'X-CSRF-Token':csrf},data:{text:'blocked',client_id:'offline-test'}})).status(),403);
+ await page.locator('#chat-main-menu').click();await page.locator('[data-view=family_photos]').click();await page.locator('.fp-tile').first().waitFor();await page.locator('[data-fp-group-select]').selectOption('-1001');
+ await page.screenshot({path:resolve(artifacts,'media-integration-desktop.png'),fullPage:true});
+ const invite=await api(context,'/invites','POST',{login:'relative'},csrf);
+ memberContext=await browser.newContext({viewport:{width:1365,height:900},locale:'ru-RU'});const memberPage=await memberContext.newPage();
+ memberPage.on('pageerror',e=>errors.push(e.message));await memberPage.route('**/api/widgets/**/rss',r=>r.fulfill({json:{items:[],errors:[]}}));
+ let memberCsrf=(await api(memberContext,'/register','POST',{login:'relative',password:'Friend-password-123',invite:invite.url.split('/').at(-1)})).csrf;
+ memberCsrf=await enroll(memberContext,memberCsrf,'Friend-password-123');const uid=(await api(memberContext,'/me')).id;
+ await api(context,'/family-photos/admin/users/'+uid,'PUT',{admin_password:'Owner-password-123',enabled:true,groups:['-1001']},csrf);
+ await api(memberContext,'/modules','PUT',{enabled:{family_photos:true}},memberCsrf);
+ await memberPage.goto(site);await memberPage.locator('[data-view=family_photos]').click();await memberPage.locator('.fp-tile').first().waitFor();
+ assert.equal(await memberPage.locator('[data-fp-group-select] option').count(),1);
+ assert.equal((await memberContext.request.get(site+'/api/family-photos/groups/-1002/media')).status(),403);
+ assert.equal((await memberContext.request.post(site+'/api/family-photos/groups/-1001/messages',{headers:{Origin:site,'X-CSRF-Token':memberCsrf},data:{text:'read-only fixture',client_id:'denied-fixture'}})).status(),403);
+ await memberPage.locator('.fp-tile').first().click();await memberPage.locator('.fp-viewer-stage img').waitFor();
+ const removed=await memberContext.request.post('http://127.0.0.1:8097/_test/delete/4',{headers:{Authorization:'Bearer '+'browser-service-token-'.repeat(3)}});assert.equal(removed.status(),200);
+ await memberPage.waitForFunction(()=>!document.querySelector('.fp-viewer'),{},{timeout:25000});
+ await memberPage.waitForFunction(()=>document.querySelectorAll('.fp-tile').length===3,{},{timeout:25000});
+ await memberPage.locator('.fp-tile').first().click();const original=await memberPage.locator('.fp-viewer-stage img').getAttribute('src');
+ await api(context,'/family-photos/admin/users/'+uid,'PUT',{admin_password:'Owner-password-123',enabled:false,groups:[]},csrf);
+ assert.equal((await memberContext.request.get(site+original)).status(),403);
+ await memberPage.waitForFunction(()=>!document.querySelector('.fp-viewer'),{},{timeout:25000});
+ await page.setViewportSize({width:390,height:844});await page.screenshot({path:resolve(artifacts,'media-integration-mobile.png'),fullPage:true});
+ assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+ assert.deepEqual(errors,[]);
+ console.log('Real DrG Media/Space browser integration passed: module opt-in, groups, calendar, viewer, chat, grants, denied writes, deletion, revocation and mobile layout.');
+}finally{if(memberContext)await memberContext.close();await browser.close();}

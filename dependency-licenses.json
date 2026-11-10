@@ -1,0 +1,380 @@
+{
+  "packages": [
+    {
+      "name": "Flask",
+      "version": "3.1.3",
+      "license": "BSD-3-Clause",
+      "notices": [
+        {
+          "path": "licenses/python/flask-3.1.3/licenses/LICENSE.txt",
+          "sha256": "489a8e1108509ed98a37bb983e11e0f7e1d31f0bd8f99a79c8448e7ff37d07ea"
+        }
+      ]
+    },
+    {
+      "name": "Jinja2",
+      "version": "3.1.6",
+      "license": "License :: OSI Approved :: BSD License",
+      "notices": [
+        {
+          "path": "licenses/python/jinja2-3.1.6/licenses/LICENSE.txt",
+          "sha256": "3b49dcee4105eb37bac10faf1be260408fe85d252b8e9df2e0979fc1e094437b"
+        }
+      ]
+    },
+    {
+      "name": "MarkupSafe",
+      "version": "3.0.4",
+      "license": "BSD-3-Clause",
+      "notices": [
+        {
+          "path": "licenses/python/markupsafe-3.0.4/licenses/LICENSE.txt",
+          "sha256": "489a8e1108509ed98a37bb983e11e0f7e1d31f0bd8f99a79c8448e7ff37d07ea"
+        }
+      ]
+    },
+    {
+      "name": "SQLAlchemy",
+      "version": "2.1.4",
+      "license": "MIT",
+      "notices": [
+        {
+          "path": "licenses/python/sqlalchemy-2.1.4/licenses/AUTHORS",
+          "sha256": "dc1db0b5d17455adc37b693ff8e409c9a80f603e441695825518c36f786c963e"
+        },
+        {
+          "path": "licenses/python/sqlalchemy-2.1.4/licenses/LICENSE",
+          "sha256": "e862bb5b904fb5513c3e14288d7a25a12eb0ecc7847a0a965d310e9a955e7cb9"
+        }
+      ]
+    },
+    {
+      "name": "Telethon",
+      "version": "1.45.0",
+      "license": "MIT",
+      "notices": [
+        {
+          "path": "licenses/python/telethon-1.45.0/licenses/LICENSE",
+          "sha256": "7d5282900d8e9ebe0f3d3742178a1d236e76d81184f4fc8290e221135f2b0b2a"
+        }
+      ]
+    },
+    {
+      "name": "Werkzeug",
+      "version": "3.1.9",
+      "license": "BSD-3-Clause",
+      "notices": [
+        {
+          "path": "licenses/python/werkzeug-3.1.9/licenses/LICENSE.txt",
+          "sha256": "3b49dcee4105eb37bac10faf1be260408fe85d252b8e9df2e0979fc1e094437b"
+        }
+      ]
+    },
+    {
+      "name": "anyio",
+      "version": "4.15.1",
+      "license": "MIT",
+      "notices": [
+        {
+          "path": "licenses/python/anyio-4.15.1/licenses/LICENSE",
+          "sha256": "5361ac9dc58f2ef5fd2e9b09c68297c17f04950909bbc8023bdb82eacf22c2b0"
+        }
+      ]
+    },
+    {
+      "name": "blinker",
+      "version": "1.9.0",
+      "license": "License :: OSI Approved :: MIT License",
+      "notices": [
+        {
+          "path": "licenses/python/blinker-1.9.0/LICENSE.txt",
+          "sha256": "9eb73a1f38597a4aa17025d2ae1be3839624c795e985d4f0e9769ce29faca467"
+        }
+      ]
+    },
+    {
+      "name": "boto3",
+      "version": "1.43.114",
+      "license": "See original license text",
+      "notices": [
+        {
+          "path": "licenses/python/boto3-1.43.114/LICENSE",
+          "sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594"
+        },
+        {
+          "path": "licenses/python/boto3-1.43.114/NOTICE",
+          "sha256": "04fb1e61484a7810f1ba09bb42bc01ca58c9af33927d7c5a21556e4c4d1c7fa4"
+        }
+      ]
+    },
+    {
+      "name": "botocore",
+      "version": "1.43.114",
+      "license": "See original license text",
+      "notices": [
+        {
+          "path": "licenses/python/botocore-1.43.114/LICENSE.txt",
+          "sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594"
+        },
+        {
+          "path": "licenses/python/botocore-1.43.114/NOTICE",
+          "sha256": "1d1c5a6f3d68cb11f4fad1afa86a7450d0286f15c176ef0ea048f255b46d95b0"
+        }
+      ]
+    },
+    {
+      "name": "certifi",
+      "version": "2026.7.22",
+      "license": "License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)",
+      "notices": [
+        {
+          "path": "licenses/python/certifi-2026.7.22/licenses/LICENSE",
+          "sha256": "e93716da6b9c0d5a4a1df60fe695b370f0695603d21f6f83f053e42cfc10caf7"
+        }
+      ]
+    },
+    {
+      "name": "click",
+      "version": "8.5.0",
+      "license": "BSD-3-Clause",
+      "notices": [
+        {
+          "path": "licenses/python/click-8.5.0/licenses/LICENSE.txt",
+          "sha256": "9a8ad106a394e853bfe21f42f4e72d592819a22805d991b5f3275029292b658d"
+        }
+      ]
+    },
+    {
+      "name": "gunicorn",
+      "version": "26.2.0",
+      "license": "MIT",
+      "notices": [
+        {
+          "path": "licenses/python/gunicorn-26.2.0/licenses/LICENSE",
+          "sha256": "1457e30a8f71334f34f241b9f267e7f5556544937bc2c1751bc58b52250c0543"
+        }
+      ]
+    },
+    {
+      "name": "h11",
+      "version": "0.16.0",
+      "license": "License :: OSI Approved :: MIT License",
+      "notices": [
+        {
+          "path": "licenses/python/h11-0.16.0/licenses/LICENSE.txt",
+          "sha256": "37db5bb85926db28a427a25867f10b1232003aea1be69ccb851138adb8e6f361"
+        }
+      ]
+    },
+    {
+      "name": "httpcore",
+      "version": "1.0.9",
+      "license": "BSD-3-Clause",
+      "notices": [
+        {
+          "path": "licenses/python/httpcore-1.0.9/licenses/LICENSE.md",
+          "sha256": "fdcb59154c74cbaba16a11242f7740bea9f23d6feb5547917d8c5f94a80392a5"
+        }
+      ]
+    },
+    {
+      "name": "httpx",
+      "version": "0.28.1",
+      "license": "License :: OSI Approved :: BSD License",
+      "notices": [
+        {
+          "path": "licenses/python/httpx-0.28.1/licenses/LICENSE.md",
+          "sha256": "4ec59d544f12b5f539a3a716fd321ac58ccd8030b465221f2c880200cdf28d8d"
+        }
+      ]
+    },
+    {
+      "name": "idna",
+      "version": "3.20",
+      "license": "BSD-3-Clause",
+      "notices": [
+        {
+          "path": "licenses/python/idna-3.20/licenses/LICENSE.md",
+          "sha256": "1a9a4f0e3d479a27240ddd59a9137a66ab4a0f9dfdc8ca6188cc0bfd85187f04"
+        }
+      ]
+    },
+    {
+      "name": "itsdangerous",
+      "version": "2.2.0",
+      "license": "License :: OSI Approved :: BSD License",
+      "notices": [
+        {
+          "path": "licenses/python/itsdangerous-2.2.0/LICENSE.txt",
+          "sha256": "63af09891b6be8ad1a4252ed43af0f4efba7fc948e228367bed7f3c5ae0b09d7"
+        }
+      ]
+    },
+    {
+      "name": "jmespath",
+      "version": "1.1.0",
+      "license": "License :: OSI Approved :: MIT License",
+      "notices": [
+        {
+          "path": "licenses/python/jmespath-1.1.0/LICENSE",
+          "sha256": "6eefacfa4d71b82d08408c751470ac8d9854538da2142cb27be0287fb13d0ab9"
+        }
+      ]
+    },
+    {
+      "name": "packaging",
+      "version": "26.3",
+      "license": "Apache-2.0 OR BSD-2-Clause",
+      "notices": [
+        {
+          "path": "licenses/python/packaging-26.3/licenses/LICENSE",
+          "sha256": "cad1ef5bd340d73e074ba614d26f7deaca5c7940c3d8c34852e65c4909686c48"
+        },
+        {
+          "path": "licenses/python/packaging-26.3/licenses/LICENSE.APACHE",
+          "sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594"
+        },
+        {
+          "path": "licenses/python/packaging-26.3/licenses/LICENSE.BSD",
+          "sha256": "b70e7e9b742f1cc6f948b34c16aa39ffece94196364bc88ff0d2180f0028fac5"
+        }
+      ]
+    },
+    {
+      "name": "pillow",
+      "version": "12.3.0",
+      "license": "MIT-CMU",
+      "notices": [
+        {
+          "path": "licenses/python/pillow-12.3.0/licenses/LICENSE",
+          "sha256": "dda12a98c1979cf3d94df1cff45d27a4cb3f04a60c76f76902ac54cac03ec0ce"
+        }
+      ]
+    },
+    {
+      "name": "psycopg-binary",
+      "version": "3.3.6",
+      "license": "LGPL-3.0-only",
+      "notices": [
+        {
+          "path": "licenses/python/psycopg-binary-3.3.6/licenses/LICENSE.txt",
+          "sha256": "e3a994d82e644b03a792a930f574002658412f62407f5fee083f2555c5f23118"
+        }
+      ]
+    },
+    {
+      "name": "psycopg",
+      "version": "3.3.6",
+      "license": "LGPL-3.0-only",
+      "notices": [
+        {
+          "path": "licenses/python/psycopg-3.3.6/licenses/LICENSE.txt",
+          "sha256": "e3a994d82e644b03a792a930f574002658412f62407f5fee083f2555c5f23118"
+        }
+      ]
+    },
+    {
+      "name": "pyaes",
+      "version": "1.6.1",
+      "license": "License :: OSI Approved :: MIT License",
+      "notices": [
+        {
+          "path": "licenses/python/pyaes-1.6.1/licenses/LICENSE.txt",
+          "sha256": "1efe6c78b28b4203d397ea9b68bdc9c658d21cd9afaf8ae8223def83f2a7ebbd"
+        }
+      ]
+    },
+    {
+      "name": "pyasn1",
+      "version": "0.6.4",
+      "license": "See original license text",
+      "notices": [
+        {
+          "path": "licenses/python/pyasn1-0.6.4/licenses/LICENSE.rst",
+          "sha256": "2aad5fc00f705c4a1addb83eed10a6a75d286a3779f0cf8519d87e62bc4735fd"
+        }
+      ]
+    },
+    {
+      "name": "python-dateutil",
+      "version": "2.9.0.post0",
+      "license": "License :: OSI Approved :: BSD License; License :: OSI Approved :: Apache Software License",
+      "notices": [
+        {
+          "path": "licenses/python/python-dateutil-2.9.0.post0/LICENSE",
+          "sha256": "ba00f51a0d92823b5a1cde27d8b5b9d2321e67ed8da9bc163eff96d5e17e577e"
+        }
+      ]
+    },
+    {
+      "name": "rsa",
+      "version": "4.9.1",
+      "license": "License :: OSI Approved :: Apache Software License",
+      "notices": [
+        {
+          "path": "licenses/python/rsa-4.9.1/LICENSE",
+          "sha256": "073f28b7d389c8fe74f607e17c27f81eaa5ace69edc43a884f23f41b41c5c726"
+        }
+      ]
+    },
+    {
+      "name": "redis",
+      "version": "8.1.0",
+      "license": "MIT",
+      "notices": [
+        {
+          "path": "licenses/python/redis-8.1.0/licenses/LICENSE",
+          "sha256": "a57b250a5bf03d7afe55b74063313f2adb7b00d546c0ab149a89398333fe3cc8"
+        }
+      ]
+    },
+    {
+      "name": "s3transfer",
+      "version": "0.19.2",
+      "license": "License :: OSI Approved :: Apache Software License",
+      "notices": [
+        {
+          "path": "licenses/python/s3transfer-0.19.2/LICENSE.txt",
+          "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+        },
+        {
+          "path": "licenses/python/s3transfer-0.19.2/NOTICE.txt",
+          "sha256": "d8354e0fa7fb762da7bc054a8a6774a0b310dfbbc78006393ee573a0e57612b5"
+        }
+      ]
+    },
+    {
+      "name": "six",
+      "version": "1.17.0",
+      "license": "License :: OSI Approved :: MIT License",
+      "notices": [
+        {
+          "path": "licenses/python/six-1.17.0/LICENSE",
+          "sha256": "4375ba20e2b9c6c4e7cad2940a628fd90e95cc3d50ee92aae755715d8ba1fbd0"
+        }
+      ]
+    },
+    {
+      "name": "typing_extensions",
+      "version": "4.16.0",
+      "license": "PSF-2.0",
+      "notices": [
+        {
+          "path": "licenses/python/typing-extensions-4.16.0/licenses/LICENSE",
+          "sha256": "3b2f81fe21d181c499c59a256c8e1968455d6689d269aa85373bfb6af41da3bf"
+        }
+      ]
+    },
+    {
+      "name": "urllib3",
+      "version": "2.8.0",
+      "license": "MIT",
+      "notices": [
+        {
+          "path": "licenses/python/urllib3-2.8.0/licenses/LICENSE.txt",
+          "sha256": "130e3a64d5fdd5d096a752694634a7d9df284469de86e5732100268041e3d686"
+        }
+      ]
+    }
+  ]
+}

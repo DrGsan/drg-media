@@ -1,0 +1,12 @@
+# Optional override: attach the API to drg-site's existing Compose network.
+# Start with: docker compose -f compose.yaml -f compose.site.yaml up -d api
+services:
+  api:
+    networks:
+      default:
+      drg-site:
+        aliases: [family-photo]
+networks:
+  drg-site:
+    external: true
+    name: ${DRG_SITE_NETWORK:-drg-site_default}
