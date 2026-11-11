@@ -2,6 +2,12 @@
 
 Application versions are independent of DrG Space; `api_version=1` is the integration protocol. Preview changes are consolidated into their stable release. Versions before 1.0.0 describe retrospective development milestones rather than separately published releases.
 
+## [1.14.2] — 2026-11-11 — Localized Media bot profile
+
+- The managed bot name is Media by default with a localized Russian name, with localized photo and video descriptions.
+- The Telegram client label uses Media Server.
+- Compatibility: API, schema, environment, keys, archive and session are unchanged; no migration is needed. The existing managed-profile reconciliation applies the text on startup.
+
 ## [1.14.1] — 2026-11-11 — Consistent runtime names
 
 - Docker containers, images and Compose project use DrG Media names.

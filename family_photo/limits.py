@@ -157,7 +157,7 @@ class LimitedTelegramClient(TelegramClient):
         self.rpc_limits=RpcLimits(config)
         super().__init__(str(config.data_dir/'telegram'),config.api_id,config.api_hash,
             catch_up=True,sequential_updates=True,flood_sleep_threshold=0,
-            request_retries=0,raise_last_call_error=True,connection_retries=5,device_model='Family Photo Server')
+            request_retries=0,raise_last_call_error=True,connection_retries=5,device_model='Media Server')
 
     async def _call(self,sender,request,ordered=False,flood_sleep_threshold=None):
         if utils.is_list_like(request):

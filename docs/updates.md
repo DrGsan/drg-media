@@ -1,5 +1,9 @@
 # Updates and compatibility
 
+## 1.14.2
+
+The managed Telegram bot uses Media as its default display name and a localized name in Russian, with matching localized descriptions. The existing startup reconciliation updates this text while retaining the approved artwork and bot username. The synchronization client label is Media Server. API version, database schema, keys, object paths, environment and Telegram session are unchanged. No migration or new settings are required. Use the existing Compose update procedure below with the same files and external volumes.
+
 ## DrG Media 1.14.0 baseline
 
 The project name changes from Family Photo to DrG Media. The application remains 1.14.0 and the integration protocol remains `api_version=1`. No new database, schema migration, media conversion or Telegram login is required solely for this repository change. The legacy Python module, command, environment keys and Docker identifiers remain supported.
