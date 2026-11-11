@@ -14,7 +14,7 @@ from sqlalchemy import select
 from .db import group_management
 
 NAME = 'DrG Family'
-DESCRIPTION = 'Семейные фотографии, воспоминания и общение через DrG Site.'
+DESCRIPTION = 'Семейные фотографии, воспоминания и общение через DrG Space.'
 LANGUAGES = ('', 'ru')
 KEY = 'site-bot-profile'
 log = logging.getLogger('family_photo.bot_profile')
