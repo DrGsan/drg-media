@@ -204,7 +204,7 @@ def create_app(config=None, archive=None):
             end=min(int(last),size-1) if first and last else size-1
             if start>end or start>=size: return Response(status=416,headers={'Content-Range':f'bytes */{size}'})
             code=206
-        headers={'Accept-Ranges':'bytes','Content-Length':str(end-start+1),'Content-Disposition':f'attachment; filename="family-photos-{jid}.zip"','ETag':'"'+jid+'"'}
+        headers={'Accept-Ranges':'bytes','Content-Length':str(end-start+1),'Content-Disposition':f'attachment; filename="drg-media-{jid}.zip"','ETag':'"'+jid+'"'}
         if code==206: headers['Content-Range']=f'bytes {start}-{end}/{size}'
         def stream():
             for block in archive.objects.read(job['object_key'],start,end):
@@ -242,7 +242,7 @@ def create_app(config=None, archive=None):
                     app.logger.warning('Photo export postponed (%s)',type(error).__name__)
                     worked=True
                 export_poll.wait(worked)
-        threading.Thread(target=prepare,name='family-photo-exports',daemon=True).start()
+        threading.Thread(target=prepare,name='drg-media-exports',daemon=True).start()
 
     @app.get("/healthz")
     def health():
