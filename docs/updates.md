@@ -2,7 +2,7 @@
 
 ## 1.14.2 preview
 
-The managed Telegram bot description uses DrG Space. The existing startup reconciliation updates that managed text; it does not change the bot name or artwork. API version, database schema, keys, object paths, environment and Telegram session are unchanged. No migration or new settings are required. Use the existing Compose update procedure below with the same files and external volumes.
+The managed Telegram bot uses Media as its default display name and Медиа in Russian, with matching localized descriptions. The existing startup reconciliation updates this text while retaining the approved artwork and bot username. The synchronization client label is Media Server. API version, database schema, keys, object paths, environment and Telegram session are unchanged. No migration or new settings are required. Use the existing Compose update procedure below with the same files and external volumes.
 
 ## DrG Media 1.14.0 baseline
 

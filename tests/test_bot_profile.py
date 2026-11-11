@@ -9,14 +9,14 @@ from email.policy import default
 import httpx
 from PIL import Image
 from sqlalchemy import select
-from family_photo.bot_profile import BotProfile, NAME, DESCRIPTION, KEY, avatar, same_avatar
+from family_photo.bot_profile import BotProfile, NAME, NAMES, DESCRIPTION, DESCRIPTIONS, KEY, avatar, same_avatar
 from family_photo.db import group_management
 
 
 class TelegramProfile:
     def __init__(self):
         self.calls = []
-        self.values = {language: dict(name=NAME, description=DESCRIPTION, short_description=DESCRIPTION) for language in ('', 'ru')}
+        self.values = {language: dict(name=NAMES[language], description=DESCRIPTIONS[language], short_description=DESCRIPTIONS[language]) for language in ('', 'ru')}
         self.photo = self.compressed(avatar()[0])
         self.photo_id = 'original-photo'
         self.lost_photo_response = False
@@ -174,3 +174,15 @@ def test_site_worker_runs_profile_check_once_and_keeps_other_work(app,monkeypatc
             assert len(remote.calls)==count
     asyncio.run(run())
     assert messaging.check_access.await_count==2*len(messaging.config.archive_group_ids)
+
+
+def test_legacy_name_and_description_become_localized_without_reuploading_artwork(app):
+    profile=app.extensions['site_messaging'].profile;remote=TelegramProfile()
+    for values in remote.values.values():
+        values.update(name='DrG Family', description='Семейные фотографии, воспоминания и общение через DrG Space.', short_description='Семейные фотографии, воспоминания и общение через DrG Space.')
+    tick(profile,remote)
+    assert remote.values['']['name']=='Media' and remote.values['ru']['name']=='Медиа'
+    assert len(remote.writes())==6 and 'setMyProfilePhoto' not in remote.writes()
+    assert profile.public()['username']=='Family_DrGbot' and profile.public()['state']=='ready'
+    remote.calls.clear();tick(BotProfile(profile.messaging),remote)
+    assert not remote.writes()

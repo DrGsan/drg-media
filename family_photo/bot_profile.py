@@ -13,8 +13,10 @@ from PIL import Image, ImageChops, ImageFilter, ImageOps, ImageStat
 from sqlalchemy import select
 from .db import group_management
 
-NAME = 'DrG Family'
-DESCRIPTION = 'Семейные фотографии, воспоминания и общение через DrG Space.'
+NAME = 'Media'
+NAMES = {'': NAME, 'ru': 'Медиа'}
+DESCRIPTION = 'Photos, videos, memories and conversations through DrG Space.'
+DESCRIPTIONS = {'': DESCRIPTION, 'ru': 'Фотографии, видео, воспоминания и общение через DrG Space.'}
 LANGUAGES = ('', 'ru')
 KEY = 'site-bot-profile'
 log = logging.getLogger('family_photo.bot_profile')
@@ -28,7 +30,7 @@ def avatar():
         image.thumbnail((1024, 1024), Image.Resampling.LANCZOS)
         output = io.BytesIO()
         image.save(output, 'JPEG', quality=95, optimize=True)
-    target = hashlib.sha256(original + json.dumps([NAME, DESCRIPTION, LANGUAGES]).encode()).hexdigest()
+    target = hashlib.sha256(original + json.dumps([NAMES, DESCRIPTIONS, LANGUAGES]).encode()).hexdigest()
     return output.getvalue(), target
 
 
@@ -113,9 +115,9 @@ class BotProfile:
                     state.update(bot_id=me['id'], username=me['username'])
                     for language in LANGUAGES:
                         for getter, setter, field, expected in (
-                            ('getMyName', 'setMyName', 'name', NAME),
-                            ('getMyDescription', 'setMyDescription', 'description', DESCRIPTION),
-                            ('getMyShortDescription', 'setMyShortDescription', 'short_description', DESCRIPTION)):
+                            ('getMyName', 'setMyName', 'name', NAMES[language]),
+                            ('getMyDescription', 'setMyDescription', 'description', DESCRIPTIONS[language]),
+                            ('getMyShortDescription', 'setMyShortDescription', 'short_description', DESCRIPTIONS[language])):
                             current = await call(getter, {'language_code': language})
                             if current[field] != expected:
                                 await call(setter, {field: expected, 'language_code': language})
@@ -160,7 +162,7 @@ class BotProfile:
                         self.photo_attempted = fingerprint
                         try:
                             await call('setMyProfilePhoto', data={'photo': json.dumps({'type': 'static', 'photo': 'attach://avatar'})},
-                                files={'avatar': ('drg-family.jpg', photo, 'image/jpeg')})
+                                files={'avatar': ('media.jpg', photo, 'image/jpeg')})
                         except ProfileError as error:
                             if 400 <= error.status < 500 and error.status != 429:
                                 state.pop('photo_set_at', None)
