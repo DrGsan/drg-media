@@ -8,7 +8,7 @@ The supported legacy command is `family-photo`; the new equivalent is `drg-media
 
 ## 1.14.1 runtime-name transition
 
-The preview uses project `drg-media`, image `drg-media:local`, containers `drg-media-api` / `drg-media-worker` and optional `drg-media-postgres`. The workspace-network alias is `drg-media`; the old `family-photo` alias remains available. `DRG_SPACE_NETWORK` takes precedence over the supported legacy `DRG_SITE_NETWORK` setting. Module names, CLI alias, `FP_*` application settings, `/v1` API, database/schema, Telegram session, object identifiers, Redis keys and storage prefixes remain compatible. No schema migration or new Telegram login is required.
+This release uses project `drg-media`, image `drg-media:local`, containers `drg-media-api` / `drg-media-worker` and optional `drg-media-postgres`. The workspace-network alias is `drg-media`; the old `family-photo` alias remains available. `DRG_SPACE_NETWORK` takes precedence over the supported legacy `DRG_SITE_NETWORK` setting. Module names, CLI alias, `FP_*` application settings, `/v1` API, database/schema, Telegram session, object identifiers, Redis keys and storage prefixes remain compatible. No schema migration or new Telegram login is required.
 
 **Pin existing volumes before changing the Compose project.** Inspect the actual `/data` volume mounted by the old API and worker, and confirm both use the same archive. For a previous project named `family-photo`:
 

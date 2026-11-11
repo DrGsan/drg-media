@@ -2,7 +2,7 @@
 
 Application versions are independent of DrG Space; `api_version=1` is the integration protocol. Preview changes are consolidated into their stable release. Versions before 1.0.0 describe retrospective development milestones rather than separately published releases.
 
-## [1.14.1rc1] — 2026-11-11 — Consistent runtime names
+## [1.14.1] — 2026-11-11 — Consistent runtime names
 
 - Docker containers, images and Compose project use DrG Media names.
 - The DrG Space network supports the drg-media alias while keeping family-photo compatible.
