@@ -593,7 +593,7 @@ class Synchronizer(TelegramDetails):
     async def run(self):
         self.state = "connecting"
         self.progress.cleaned(self.archive.objects.clean_temporary(startup=True))
-        maintenance = asyncio.create_task(self.maintenance_loop(), name='family-photo-cleanup')
+        maintenance = asyncio.create_task(self.maintenance_loop(), name='drg-media-cleanup')
         async def heartbeat():
             while True:
                 self.archive.heartbeat(self.state)
@@ -629,7 +629,7 @@ class Synchronizer(TelegramDetails):
         if not await self.client.is_user_authorized():
             self.state = "login_required"
             self.archive.heartbeat("login_required")
-            raise RuntimeError("Telegram login required; run family-photo login")
+            raise RuntimeError("Telegram login required; run drg-media login")
         me = await self.client.get_me()
         with tempfile.NamedTemporaryFile(mode='w', dir=self.config.data_dir, prefix='.telegram-account-', delete=False) as temporary:
             json.dump({'id': me.id}, temporary)

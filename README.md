@@ -51,7 +51,7 @@ The API binds to `127.0.0.1:8090`; it is a private service, not a public website
 
 ## Compatibility and dependencies
 
-DrG Media is the new project name for Family Photo. The Python module `family_photo`, legacy `family-photo` command, `FP_*` settings, `/v1` API, database identifiers, object keys and existing Docker names remain compatible. Use Python 3.14 and Docker Compose v2; preserve the working environment, Telegram session, archive identities and storage when updating.
+DrG Media is the new project name for Family Photo. The Python module `family_photo`, legacy `family-photo` command, `FP_*` settings, `/v1` API, database identifiers, and object keys remain compatible. Docker names now use `drg-media`; existing installations must follow the documented volume-preserving transition before changing their Compose project. Use Python 3.14 and Docker Compose v2; preserve the working environment, Telegram session, archive identities and storage when updating.
 
 ### Optional services
 

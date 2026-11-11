@@ -1,7 +1,9 @@
+name: drg-media
+
 services:
   api:
-    image: family-photo-image:local
-    container_name: family-photo-api
+    image: drg-media:local
+    container_name: drg-media-api
     build: .
     restart: unless-stopped
     env_file: .env
@@ -22,10 +24,10 @@ services:
       driver: json-file
       options: {max-size: "10m", max-file: "3"}
   worker:
-    image: family-photo-image:local
-    container_name: family-photo-worker
+    image: drg-media:local
+    container_name: drg-media-worker
     restart: unless-stopped
-    command: ["family-photo", "worker"]
+    command: ["drg-media", "worker"]
     env_file: .env
     environment:
       FP_DATA_DIR: /data
@@ -41,3 +43,5 @@ services:
       options: {max-size: "10m", max-file: "3"}
 volumes:
   archive-data:
+    name: ${DRG_MEDIA_DATA_VOLUME:-${COMPOSE_PROJECT_NAME:-drg-media}_archive-data}
+    external: ${DRG_MEDIA_EXTERNAL_VOLUMES:-false}

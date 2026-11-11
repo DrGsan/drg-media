@@ -2,6 +2,13 @@
 
 Application versions are independent of DrG Space; `api_version=1` is the integration protocol. Preview changes are consolidated into their stable release. Versions before 1.0.0 describe retrospective development milestones rather than separately published releases.
 
+## [1.14.1] — 2026-11-11 — Consistent runtime names
+
+- Docker containers, images and Compose project use DrG Media names.
+- The DrG Space network supports the drg-media alias while keeping family-photo compatible.
+- Existing archive and optional PostgreSQL volumes can be pinned explicitly during the project rename.
+- Compatibility: preserve the database, objects, session and keys; follow docs/updates.md before changing a running project.
+
 ## [1.14.0] — 2026-11-06 — Voice and video notes
 
 - Recording metadata retains duration and waveform in the existing attachment JSON. Video notes use sendVideoNote and independently acknowledged author text; retries do not duplicate acknowledged parts.

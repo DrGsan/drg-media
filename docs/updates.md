@@ -6,24 +6,51 @@ The project name changes from Family Photo to DrG Media. The application remains
 
 The supported legacy command is `family-photo`; the new equivalent is `drg-media`. Both use `family_photo.__version__`. Existing service URLs and `FAMILY_PHOTO_*` settings in the portal remain valid. Product history is retained in [CHANGELOG](../CHANGELOG.md).
 
-## Updating an existing installation
+## 1.14.1 runtime-name transition
 
-Keep the working `.env`, Telegram session, checkpoints, limit deadlines, object keys, database, S3 prefix, Compose project name, networks and volumes. Do not regenerate secrets or initialize a new database. The directory name is not the data identity.
+This release uses project `drg-media`, image `drg-media:local`, containers `drg-media-api` / `drg-media-worker` and optional `drg-media-postgres`. The workspace-network alias is `drg-media`; the old `family-photo` alias remains available. `DRG_SPACE_NETWORK` takes precedence over the supported legacy `DRG_SITE_NETWORK` setting. Module names, CLI alias, `FP_*` application settings, `/v1` API, database/schema, Telegram session, object identifiers, Redis keys and storage prefixes remain compatible. No schema migration or new Telegram login is required.
 
-For an existing installation whose project name is `family-photo` and which uses the portal network override, an update looks like:
+**Pin existing volumes before changing the Compose project.** Inspect the actual `/data` volume mounted by the old API and worker, and confirm both use the same archive. For a previous project named `family-photo`:
 
 ```sh
-git fetch origin
-git switch main
-git pull --ff-only origin main
-docker compose -p family-photo -f compose.yaml -f compose.site.yaml config -q
-docker compose -p family-photo -f compose.yaml -f compose.site.yaml up -d --build api worker
-docker compose -p family-photo -f compose.yaml -f compose.site.yaml ps
+docker inspect family-photo-api --format '{{range .Mounts}}{{if eq .Destination "/data"}}{{.Name}}{{end}}{{end}}'
 ```
 
-Use the installation's actual project name and all overlays, adding `compose.postgres.yaml` only when already used. A source-repository cutover needs a separately prepared checkout: do not merge unrelated Git histories. Confirm every resolved volume before starting a differently named directory.
+Add deployment settings to the working `.env`, substituting inspected names:
 
-Update API and worker together. A restart alone does not apply a new image or changed environment. `/healthz` checks HTTP availability; verify authorized status, source state and supported media after updating.
+```dotenv
+DRG_MEDIA_EXTERNAL_VOLUMES=true
+DRG_MEDIA_DATA_VOLUME=family-photo_archive-data
+DRG_SPACE_NETWORK=drg-space_default
+```
+
+Set `DRG_MEDIA_POSTGRES_VOLUME` to the existing PostgreSQL volume when that overlay is already used. External mode fails if the named volume is absent; it does not create an empty replacement. Preserve service tokens, Telegram session/checkpoints, database URL, S3 prefix and AWS settings. New installations use managed project-scoped volumes by default.
+
+With the actual existing overlays and the DrG Space network already prepared:
+
+```sh
+docker compose -p drg-media -f compose.yaml -f compose.site.yaml config -q
+docker compose -p drg-media -f compose.yaml -f compose.site.yaml build api
+docker compose -p family-photo -f compose.yaml -f compose.site.yaml stop worker api
+docker compose -p family-photo -f compose.yaml -f compose.site.yaml rm -f worker api
+docker compose -p drg-media -f compose.yaml -f compose.site.yaml up -d --no-build --wait api worker
+```
+
+When bundled PostgreSQL is already used, include its overlay in every command and hand over that database container in the same controlled sequence. Never run two workers against the same archive/session. Keep port bindings and bind mounts unchanged. Do not use `down -v`. Update the workspace's internal service URL to `http://drg-media:8090` when using the new network. A client still using `http://family-photo:8090` on that network remains compatible.
+
+Before removing old networks or images, confirm health, authorized status, archive identities, session availability and worker state. Keep previous images and the recorded old configuration for rollback until acceptance. Rollback stops the new containers and restores the previous images/project with the exact same volume names and environment; do not restore an old database over messages already received merely to rename containers.
+
+## Subsequent updates
+
+Keep all configured external volume names, working `.env`, ports and overlays. Fetch the approved release, then:
+
+```sh
+docker compose -p drg-media -f compose.yaml -f compose.site.yaml config -q
+docker compose -p drg-media -f compose.yaml -f compose.site.yaml up -d --build --wait api worker
+docker compose -p drg-media -f compose.yaml -f compose.site.yaml ps
+```
+
+A restart alone does not apply a new image or changed environment. `/healthz` checks HTTP availability; verify authorized status, source state and supported media after updating. A source-repository cutover must not merge unrelated Git histories. Preserve archive storage independently of the source directory.
 
 ## Historical compatibility
 

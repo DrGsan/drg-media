@@ -64,13 +64,13 @@ Reading and sending permissions are separate. Basic groups remain readable but c
 
 ## DrG Space integration
 
-Set `FAMILY_PHOTO_URL` and `FAMILY_PHOTO_TOKEN` in DrG Space. The token is the same secret as `FP_SERVICE_TOKEN`. For Compose network integration, inspect the portal's actual network name, set `DRG_SITE_NETWORK`, and include the existing override:
+Set `FAMILY_PHOTO_URL` and `FAMILY_PHOTO_TOKEN` in DrG Space. The token is the same secret as `FP_SERVICE_TOKEN`. For Compose network integration, inspect the portal's actual network name, set `DRG_SPACE_NETWORK`, and include the existing override:
 
 ```sh
 docker compose -f compose.yaml -f compose.site.yaml up -d api worker
 ```
 
-The internal API alias remains `family-photo`, so a compatible URL is `http://family-photo:8090`. Enable the module and assign group permissions through DrG Space. The portal supplies the browser interface, accounts, invitations and per-user authorization. The archive token must never be sent to a browser. The service does not need its own public reverse-proxy route.
+The current internal API alias is `drg-media`, so use `http://drg-media:8090`. The earlier `family-photo` alias and `DRG_SITE_NETWORK` setting remain supported for existing clients. Enable the module and assign group permissions through DrG Space. The portal supplies the browser interface, accounts, invitations and per-user authorization. The archive token must never be sent to a browser. The service does not need its own public reverse-proxy route.
 
 ## Optional backends
 
@@ -84,6 +84,6 @@ For Redis, set `FP_REDIS_URL` only when a private instance is available. `rediss
 
 `/healthz` checks HTTP liveness without creating the archive. Authorized `/v1/status` provides broader service state. Neither a healthy HTTP probe nor a container restart proves Telegram or S3 connectivity. Keep API ports private and use the built-in token.
 
-Default Docker names retain `family-photo-*` compatibility and describe one installation per host. A second installation needs distinct container names, a distinct Compose project, independent volumes, credentials and object prefix. Changing the repository directory alone must never silently replace a working volume.
+The default Compose project is `drg-media`, with `drg-media-api`, `drg-media-worker` and image `drg-media:local`. The optional database container is `drg-media-postgres`. Before upgrading an existing `family-photo` deployment, follow the volume-preserving transition in [updates](docs/updates.md). Default names describe one installation per host. A second installation needs distinct container names, a distinct Compose project, independent volumes, credentials and object prefix. Changing the repository directory alone must never silently replace a working volume.
 
 Back up the archive database, objects, configuration, session and persistent operational state consistently. A DrG Space `.drgbackup` does not include this service's data.

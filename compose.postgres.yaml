@@ -1,16 +1,16 @@
 services:
   api:
     environment:
-      FP_DATABASE_URL: postgresql+psycopg://family_photo:${FP_POSTGRES_PASSWORD:?Set a separate database password}@family-photo-postgres:5432/family_photo
+      FP_DATABASE_URL: postgresql+psycopg://family_photo:${FP_POSTGRES_PASSWORD:?Set a separate database password}@drg-media-postgres:5432/family_photo
     depends_on:
       postgres:
         condition: service_healthy
   worker:
     environment:
-      FP_DATABASE_URL: postgresql+psycopg://family_photo:${FP_POSTGRES_PASSWORD:?Set a separate database password}@family-photo-postgres:5432/family_photo
+      FP_DATABASE_URL: postgresql+psycopg://family_photo:${FP_POSTGRES_PASSWORD:?Set a separate database password}@drg-media-postgres:5432/family_photo
   postgres:
     image: postgres:18
-    container_name: family-photo-postgres
+    container_name: drg-media-postgres
     restart: unless-stopped
     environment:
       POSTGRES_DB: family_photo
@@ -22,7 +22,7 @@ services:
     # Keep a unique name for this database without renaming the existing service.
     networks:
       default:
-        aliases: [family-photo-postgres]
+        aliases: [drg-media-postgres]
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U family_photo -d family_photo"]
       interval: 5s
@@ -30,3 +30,5 @@ services:
       retries: 20
 volumes:
   archive-postgres:
+    name: ${DRG_MEDIA_POSTGRES_VOLUME:-${COMPOSE_PROJECT_NAME:-drg-media}_archive-postgres}
+    external: ${DRG_MEDIA_EXTERNAL_VOLUMES:-false}
