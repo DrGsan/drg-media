@@ -1,5 +1,7 @@
 # DrG Media
 
+<p><img src="docs/assets/repository-avatar.png" width="112" height="112" alt="DrG Media logo"></p>
+
 A self-hosted Telegram archive and media service for DrG Space. Archive explicitly selected groups, preserve message history and media, import Telegram Desktop HTML exports, and provide authorized conversations and galleries through the workspace.
 
 [Changelog](CHANGELOG.md) · [Quick start](#quick-start) · [Documentation](#documentation) · [Development](#development-and-checks) · [License](LICENSE)
