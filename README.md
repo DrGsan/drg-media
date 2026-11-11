@@ -2,7 +2,11 @@
 
 A self-hosted Telegram archive and media service for DrG Space. Archive explicitly selected groups, preserve message history and media, import Telegram Desktop HTML exports, and provide authorized conversations and galleries through the workspace.
 
-DrG Media is the new project name for Family Photo. The Python module `family_photo`, legacy `family-photo` command, `FP_*` settings, `/v1` API, database identifiers, object keys and existing Docker names remain compatible. The service has no separate end-user web interface: DrG Space supplies accounts, permissions, chats and galleries.
+[Changelog](CHANGELOG.md) · [Quick start](#quick-start) · [Documentation](#documentation) · [Development](#development-and-checks) · [License](LICENSE)
+
+## Overview
+
+The service has no separate end-user web interface: DrG Space supplies accounts, permissions, chats and galleries.
 
 ## Features
 
@@ -15,9 +19,9 @@ DrG Media is the new project name for Family Photo. The Python module `family_ph
 - Persisted Telegram rate limits, checked download checkpoints, bounded retries and automatic resource cleanup.
 - SQLite and local files by default; optional PostgreSQL, S3-compatible storage and Redis metadata caching.
 
-## Start with an offline export
+## Quick start
 
-Clone the repository URL supplied by your maintainer into `drg-media`, then:
+Start with your own offline export. Clone the repository URL supplied by your maintainer into `drg-media`, then:
 
 ```sh
 cd drg-media
@@ -31,19 +35,25 @@ The API binds to `127.0.0.1:8090`; it is a private service, not a public website
 
 ## Documentation
 
-- [Installation and DrG Space integration](INSTALL.md)
-- [Updates and compatibility](docs/updates.md)
-- [Telegram limits and download recovery](docs/telegram-limits.md)
-- [Progress and cleanup](docs/sync-progress.md)
-- [Source bindings](docs/live-bindings.md)
-- [Group names and avatars](docs/group-profiles.md)
-- [Stickers, voice and video notes](docs/stickers.md)
-- [Storage transfer and backup](docs/storage-transfer.md)
-- [Private service API](docs/api.md)
-- [Release history](CHANGELOG.md)
-- [Contributing](CONTRIBUTING.md)
+| Guide | Contents |
+| --- | --- |
+| [Installation and DrG Space integration](INSTALL.md) | Configuration, initial account login and workspace integration |
+| [Updates and compatibility](docs/updates.md) | Upgrade steps and storage compatibility |
+| [Telegram limits and download recovery](docs/telegram-limits.md) | Rate limits, retries and resumable downloads |
+| [Progress and cleanup](docs/sync-progress.md) | Progress reporting and automatic cleanup |
+| [Source bindings](docs/live-bindings.md) | Telegram sources and archive identities |
+| [Group names and avatars](docs/group-profiles.md) | Managed group profiles |
+| [Stickers, voice and video notes](docs/stickers.md) | Supported media and playback |
+| [Storage transfer and backup](docs/storage-transfer.md) | Moving and recovering stored data |
+| [Private service API](docs/api.md) | Authorized service endpoints |
+| [Release history](CHANGELOG.md) | User-facing changes by version |
+| [Contributing](CONTRIBUTING.md) | Development setup and checks |
 
-## Optional services
+## Compatibility and dependencies
+
+DrG Media is the new project name for Family Photo. The Python module `family_photo`, legacy `family-photo` command, `FP_*` settings, `/v1` API, database identifiers, object keys and existing Docker names remain compatible. Use Python 3.14 and Docker Compose v2; preserve the working environment, Telegram session, archive identities and storage when updating.
+
+### Optional services
 
 | Service | Purpose | Without it |
 | --- | --- | --- |
@@ -56,7 +66,26 @@ The API binds to `127.0.0.1:8090`; it is a private service, not a public website
 
 The reader account and bot have different roles. Do not publish the internal API, Telegram session, bot token or service token. Archive only material you are authorized to access and operate the integration under Telegram's current terms.
 
-## Licensing
+## Development and checks
+
+Use Python 3.14 and this project's pinned runtime dependencies. The [contributor guide](CONTRIBUTING.md) describes the PostgreSQL and S3 test modes and the browser integration fixtures.
+
+```sh
+python3 -m venv .venv
+.venv/bin/python -m pip install -r requirements.lock.txt
+.venv/bin/python -m pip install -e '.[test]' -c requirements.lock.txt
+.venv/bin/python -m pytest -q
+python3 scripts/check-public-content.py
+.venv/bin/python scripts/dependency-notices.py --check
+```
+
+Tests use disposable data, emulated storage and mocked Telegram transports. Keep live sessions, production databases and working buckets outside test configurations.
+
+## Release history
+
+Read the [changelog](CHANGELOG.md) for release notes and the [update guide](docs/updates.md) before upgrading. The application version is maintained in `family_photo.__version__`; `api_version` is the separate integration contract.
+
+## License
 
 The project's own code uses [Elastic License 2.0](LICENSE), the same approach as DrG Space. Self-hosting and modifications are permitted under that license; providing substantial functionality as a hosted or managed service requires separate permission. This is source-available software, not OSI open source.
 
