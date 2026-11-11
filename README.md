@@ -10,6 +10,14 @@ A self-hosted Telegram archive and media service for DrG Space. Archive explicit
 
 The service has no separate end-user web interface: DrG Space supplies accounts, permissions, chats and galleries.
 
+## Screenshots
+
+### Media gallery in DrG Space
+
+![An imported demonstration media collection displayed in the DrG Space gallery](docs/assets/screenshots/media-1.14.2-space-5.1.1-gallery.jpg)
+
+*Screenshot from DrG Media 1.14.2 integrated with DrG Space 5.1.1, using fictional demo data and bundled illustrative artwork. The current interface may differ.*
+
 ## Features
 
 - Resumable Telegram history and live updates through a dedicated MTProto account.
