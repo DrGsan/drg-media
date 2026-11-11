@@ -2,6 +2,11 @@
 
 Application versions are independent of DrG Space; `api_version=1` is the integration protocol. Preview changes are consolidated into their stable release. Versions before 1.0.0 describe retrospective development milestones rather than separately published releases.
 
+## [1.14.2rc1] — 2026-11-11 — DrG Space bot description
+
+- The managed bot description uses the DrG Space product name.
+- Compatibility: API, schema, environment, keys, archive and session are unchanged; no migration is needed. The existing managed-profile reconciliation applies the text on startup.
+
 ## [1.14.1] — 2026-11-11 — Consistent runtime names
 
 - Docker containers, images and Compose project use DrG Media names.
