@@ -4,7 +4,7 @@ Application versions are independent of DrG Space; `api_version=1` is the integr
 
 ## [1.14.2] — 2026-11-11 — Localized Media bot profile
 
-- The managed bot name is Media by default and Медиа in Russian, with localized photo and video descriptions.
+- The managed bot name is Media by default with a localized Russian name, with localized photo and video descriptions.
 - The Telegram client label uses Media Server.
 - Compatibility: API, schema, environment, keys, archive and session are unchanged; no migration is needed. The existing managed-profile reconciliation applies the text on startup.
 
