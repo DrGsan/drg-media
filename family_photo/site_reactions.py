@@ -28,7 +28,8 @@ class BotReactions:
     def __init__(self,messaging):self.messaging=messaging;self.archive=messaging.archive
 
     @staticmethod
-    def read(c,gid,mid):
+    def read(c,gid,mid,*,page=None):
+        if page is not None:return page.reactions.get(key(gid,mid))
         raw=c.execute(select(group_management.c.value).where(group_management.c.id==key(gid,mid))).scalar()
         return json.loads(raw) if raw else None
 
@@ -140,8 +141,8 @@ class BotReactions:
             if self.messaging.paused() or sent>=5:return sent
         return sent
 
-    def decorate(self,c,row,result):
-        job=self.read(c,row['group_id'],row['id'])
+    def decorate(self,c,row,result,*,page=None):
+        job=self.read(c,row['group_id'],row['id'],page=page)
         if not job:return
         result['bot_reaction_sync']=self.public(job)
         # Only remove a positively identified mirrored bot vote. Other Telegram

@@ -284,28 +284,29 @@ class Archive(Details):
                 group['avatar_version'] = identity if group['has_avatar'] else None
             return result
 
-    def serialize(self, c, row):
+    def serialize(self, c, row, *, page=None):
         result = {k: row[k] for k in ("id", "group_id", "created", "edited", "sender_id", "sender", "album_id", "reply_to")}
         result['version'] = row['fingerprint']
-        content = self.objects.read_json(row["content_key"])
+        content = page.contents[row['group_id'],row['id']] if page is not None else self.objects.read_json(row["content_key"])
         result["text"] = content["text"]
         result.update({k:content[k] for k in ('content_type','duration','waveform','sticker_emoji','custom_emoji','custom_emojis','reactions') if k in content})
-        sent = c.execute(select(outbox.c.author).where(and_(outbox.c.group_id == row["group_id"],
+        sent = page.authors.get((row['group_id'],row['id'])) if page is not None else c.execute(select(outbox.c.author).where(and_(outbox.c.group_id == row["group_id"],
             outbox.c.message_id == row["id"], outbox.c.state == "delivered"))).scalar()
         if sent:
             result["sender"] = sent + " · с сайта"
-        result.update(self.person(c,row['group_id'],row['sender_id']))
-        result['custom_emojis']=[{**entry,**self.emoji(c,row['group_id'],entry['document_id'])} for entry in result.get('custom_emojis',[])]
-        result['reactions']=[{**reaction,'people':[self.reactor(c,row['group_id'],person) for person in reaction.get('people',[])],**({'custom_emoji':self.emoji(c,row['group_id'],reaction['document_id'])} if reaction.get('document_id') else {})} for reaction in result.get('reactions',[])]
-        result["media"] = [self.serial_media(item) for item in c.execute(select(media).where(
-            and_(media.c.group_id == row["group_id"], media.c.message_id == row["id"]))).mappings()]
+        result.update(self.person(c,row['group_id'],row['sender_id'],page=page))
+        result['custom_emojis']=[{**entry,**self.emoji(c,row['group_id'],entry['document_id'],page=page)} for entry in result.get('custom_emojis',[])]
+        result['reactions']=[{**reaction,'people':[self.reactor(c,row['group_id'],person,page=page) for person in reaction.get('people',[])],**({'custom_emoji':self.emoji(c,row['group_id'],reaction['document_id'],page=page)} if reaction.get('document_id') else {})} for reaction in result.get('reactions',[])]
+        items = page.media.get((row['group_id'],row['id']), ()) if page is not None else c.execute(select(media).where(
+            and_(media.c.group_id == row["group_id"], media.c.message_id == row["id"]))).mappings()
+        result["media"] = [self.serial_media(item) for item in items]
         for item in result['media']:
             if item['kind'] in {'voice','audio','video_note'} and content.get('duration') is not None:item['duration']=content['duration']
             if item['kind']=='voice' and content.get('waveform'):item['waveform']=content['waveform']
         if getattr(self,'site_messaging',None):
-            self.site_messaging.decorate(c,row,result)
+            self.site_messaging.decorate(c,row,result,page=page)
             from .site_reactions import BotReactions
-            BotReactions(self.site_messaging).decorate(c,row,result)
+            BotReactions(self.site_messaging).decorate(c,row,result,page=page)
         return result
 
     @staticmethod
@@ -331,7 +332,9 @@ class Archive(Details):
             more = bool(selected and c.execute(select(messages.c.id).where(and_(
                 messages.c.group_id == gid, messages.c.deleted == False,
                 messages.c.id < selected[-1]['id'])).limit(1)).first())
-            return {"items": [self.serialize(c, row) for row in reversed(selected)], "more": more}
+            from .history_page import HistoryPage
+            page = HistoryPage(self, c, selected)
+            return {"items": [self.serialize(c, row, page=page) for row in reversed(selected)], "more": more}
 
     def enqueue(self, gid, actor, author, client_id, text, reply_to=None):
         digest = hashlib.sha256(json.dumps([text, reply_to], ensure_ascii=False).encode()).hexdigest()
