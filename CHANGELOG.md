@@ -2,6 +2,12 @@
 
 Application versions are independent of DrG Space; `api_version=1` is the integration protocol. Preview changes are consolidated into their stable release. Versions before 1.0.0 describe retrospective development milestones rather than separately published releases.
 
+## [1.14.3] — 2026-11-15 — Batched history metadata
+
+- Load chat history with fewer repeated database queries for senders, reactions and attachments.
+- Preserve album boundaries, bot attribution, edits, custom emoji and group access checks.
+- Compatibility: API version, schema, object layout, environment, keys and Telegram session are unchanged; no migration is needed. Update API and worker together using the existing Compose settings.
+
 ## [1.14.2] — 2026-11-11 — Localized Media bot profile
 
 - The managed bot name is Media by default with a localized Russian name, with localized photo and video descriptions.

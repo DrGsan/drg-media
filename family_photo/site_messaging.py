@@ -233,9 +233,12 @@ class SiteMessaging:
             if row['send_id']:raise MessagingError('upload_in_use')
             self.archive.gc(c,row['object_key']);self.archive.gc(c,row['thumb_key']);c.execute(site_uploads.delete().where(site_uploads.c.id==fid))
 
-    def get(self,jid,c=None):
+    def get(self,jid,c=None,*,page=None):
         if c is None:
-            with self.archive.engine.connect() as connection:return self.get(jid,connection)
+            with self.archive.engine.connect() as connection:return self.get(jid,connection,page=page)
+        if page is not None:
+            if jid not in page.sends:raise MessagingError('message_not_found',404)
+            return dict(page.sends[jid])
         row=c.execute(select(site_sends).where(site_sends.c.id==jid)).mappings().first()
         if not row:raise MessagingError('message_not_found',404)
         return dict(row)|json.loads(row['value'])
@@ -336,11 +339,11 @@ class SiteMessaging:
         index=ordinal-int(job.get('recording_header',False))
         return index if 0<=index<len(job['attachments']) else None
 
-    def decorate(self,c,row,result):
-        part=c.execute(select(site_parts).where(site_parts.c.group_id==row['group_id'],site_parts.c.message_id==row['id'])).mappings().first()
+    def decorate(self,c,row,result,*,page=None):
+        part=page.parts.get((row['group_id'],row['id'])) if page is not None else c.execute(select(site_parts).where(site_parts.c.group_id==row['group_id'],site_parts.c.message_id==row['id'])).mappings().first()
         if not part or str(part['bot_id'])!=row['sender_id']:return
-        job=self.get(part['send_id'],c)
-        result['version']=self.version(c,row['group_id'],row['id'],row['fingerprint'])
+        job=self.get(part['send_id'],c,page=page)
+        result['version']=self.version(c,row['group_id'],row['id'],row['fingerprint'],page=page)
         result.update(site_actor_id=job['actor_id'],site_send_id=job['id'],site_author=job['author'],site_revision=job['revision'],
             site_primary=part['ordinal']==0,
             site_editable_until=job.get('sent_at',job['created'])+EDIT_SECONDS,site_edit_state=job['state'],site_error=job.get('error'),sender=job['author'],sender_id='site:'+job['actor_id'],
@@ -348,15 +351,15 @@ class SiteMessaging:
         result['custom_emojis']=[]
         index=self.attachment_index(job,part['ordinal'])
         if index is not None:
-            file=c.execute(select(site_uploads).where(site_uploads.c.id==job['attachments'][index])).mappings().first()
+            file=page.uploads.get(job['attachments'][index]) if page is not None else c.execute(select(site_uploads).where(site_uploads.c.id==job['attachments'][index])).mappings().first()
             if file:result['media']=[self.file(file)]
 
-    def version(self,c,gid,mid,base):
-        part=c.execute(select(site_parts).where(site_parts.c.group_id==gid,site_parts.c.message_id==mid)).mappings().first()
+    def version(self,c,gid,mid,base,*,page=None):
+        part=page.parts.get((gid,mid)) if page is not None else c.execute(select(site_parts).where(site_parts.c.group_id==gid,site_parts.c.message_id==mid)).mappings().first()
         if not part:return base
-        sender=c.execute(select(messages.c.sender_id).where(messages.c.group_id==gid,messages.c.id==mid)).scalar()
+        sender=page.rows[gid,mid]['sender_id'] if page is not None else c.execute(select(messages.c.sender_id).where(messages.c.group_id==gid,messages.c.id==mid)).scalar()
         if str(part['bot_id'])!=sender:return base
-        job=self.get(part['send_id'],c)
+        job=self.get(part['send_id'],c,page=page)
         return str(base)+':site:'+job['actor_id']+':'+str(job['revision'])
 
     def message_states(self,c,gid,ids):

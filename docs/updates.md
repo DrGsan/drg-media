@@ -1,5 +1,11 @@
 # Updates and compatibility
 
+## 1.14.3
+
+History pages batch the metadata for their selected messages in the existing group scope. Sender profiles, reaction participants, custom emoji, attachments and confirmed bot-message presentation retain their behavior. Presentation data exists only for the current page; changes and access revocations remain visible to the next request. Message JSON objects retain their existing paths and are still read individually.
+
+There are no API-version, database/schema, object-format, dependency, environment, key or Telegram-session changes. No migration or new settings are required. Update API and worker together using the existing Compose files and volumes: stop worker first, then API; start and verify the updated API before starting a single updated worker. Rolling back to 1.14.2 requires no data changes.
+
 ## 1.14.2
 
 The managed Telegram bot uses Media as its default display name and a localized name in Russian, with matching localized descriptions. The existing startup reconciliation updates this text while retaining the approved artwork and bot username. The synchronization client label is Media Server. API version, database schema, keys, object paths, environment and Telegram session are unchanged. No migration or new settings are required. Use the existing Compose update procedure below with the same files and external volumes.

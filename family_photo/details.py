@@ -5,16 +5,16 @@ from sqlalchemy import select, and_
 from .db import people, emoji_assets,garbage
 
 class Details:
-    def person(self,c,gid,sid):
-        value=c.execute(select(people).where(people.c.group_id==gid,people.c.sender_id==str(sid))).mappings().first()
+    def person(self,c,gid,sid,*,page=None):
+        value=page.people.get((gid,str(sid))) if page is not None else c.execute(select(people).where(people.c.group_id==gid,people.c.sender_id==str(sid))).mappings().first()
         return {'sender_avatar_version':value['avatar_identity'],'sender_has_avatar':bool(value['avatar_key'])} if value else {}
 
-    def reactor(self,c,gid,person):
-        value=c.execute(select(people).where(people.c.group_id==gid,people.c.sender_id==str(person['id']))).mappings().first()
+    def reactor(self,c,gid,person,*,page=None):
+        value=page.people.get((gid,str(person['id']))) if page is not None else c.execute(select(people).where(people.c.group_id==gid,people.c.sender_id==str(person['id']))).mappings().first()
         return {**person,**({'name':value['name'],'avatar_version':value['avatar_identity'],'has_avatar':bool(value['avatar_key'])} if value else {})}
 
-    def emoji(self,c,gid,eid):
-        value=c.execute(select(emoji_assets).where(emoji_assets.c.group_id==gid,emoji_assets.c.document_id==str(eid))).mappings().first()
+    def emoji(self,c,gid,eid,*,page=None):
+        value=page.emojis.get((gid,str(eid))) if page is not None else c.execute(select(emoji_assets).where(emoji_assets.c.group_id==gid,emoji_assets.c.document_id==str(eid))).mappings().first()
         return {'state':value['state'],'mime':value['mime'],'has_thumbnail':bool(value['thumb_key'])} if value else {'state':'pending'}
 
     def save_person(self,gid,sid,**values):
