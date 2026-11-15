@@ -1,6 +1,6 @@
 # Updates and compatibility
 
-## 1.14.3-rc.1 (preview)
+## 1.14.3
 
 History pages batch the metadata for their selected messages in the existing group scope. Sender profiles, reaction participants, custom emoji, attachments and confirmed bot-message presentation retain their behavior. Presentation data exists only for the current page; changes and access revocations remain visible to the next request. Message JSON objects retain their existing paths and are still read individually.
 
