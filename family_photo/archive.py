@@ -289,6 +289,24 @@ class Archive(Details):
                 group['avatar_version'] = identity if group['has_avatar'] else None
             return result
 
+    def room_previews(self, catalog):
+        """One current message per active group, with shared metadata batches."""
+        from sqlalchemy import tuple_
+        from .history_page import HistoryPage
+        identities = [(group['id'], group['latest_message_id']) for group in catalog if group['latest_message_id']]
+        result = {group['id']: None for group in catalog}
+        with self.engine.connect() as c:
+            for start in range(0, len(identities), 256):
+                rows = list(c.execute(select(messages).where(messages.c.deleted == False,
+                    tuple_(messages.c.group_id, messages.c.id).in_(identities[start:start+256]))).mappings())
+                page = HistoryPage(self, c, rows)
+                for row in rows:
+                    item = self.serialize(c, row, page=page)
+                    result[row['group_id']] = {key: item[key] for key in ('id', 'created', 'sender', 'text')} | {
+                        'content_type': item.get('content_type'),
+                        'media': [{key: file[key] for key in ('kind', 'name')} for file in item['media']]}
+        return result
+
     def serialize(self, c, row, *, page=None):
         result = {k: row[k] for k in ("id", "group_id", "created", "edited", "sender_id", "sender", "album_id", "reply_to")}
         result['version'] = row['fingerprint']

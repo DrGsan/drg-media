@@ -2,6 +2,8 @@
 
 ## 1.14.4 preview
 
+`GET /v1/groups?previews=1` optionally includes `last_message` (or null for an empty group). Only active groups are included. The latest messages and their presentation metadata share bounded batches across groups; clients no longer need a history request for each room. The default catalog and existing history contract remain compatible. No additional schema or environment change is needed for this catalog option.
+
 History media includes optional positive `width` and `height` values. The existing batched media-row query returns them; no preview objects are opened by history serialization. New downloads, imports and site uploads record these values when the preview is already available. Unknown dimensions are zero, allowing older clients and unavailable previews to keep their fallback behavior.
 
 For an existing archive, build the updated image first, preserve a consistent database copy and verify the change on that copy. Stop the worker and API using the same Compose project/files as before. Add only these two columns, retaining all existing rows, keys, sessions and objects. The example uses the configured SQLite or PostgreSQL connection and is safe to repeat:

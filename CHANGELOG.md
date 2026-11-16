@@ -2,8 +2,9 @@
 
 Application versions are independent of DrG Space; `api_version=1` is the integration protocol. Preview changes are consolidated into their stable release. Versions before 1.0.0 describe retrospective development milestones rather than separately published releases.
 
-## [1.14.4-rc.1] — 2026-11-16 — Preview dimensions in history
+## [1.14.4-rc.2] — 2026-11-16 — Preview dimensions in history
 
+- Include optional latest-message previews in the group catalog using bounded cross-group metadata queries.
 - Return stored preview width and height with the existing batched history response.
 - Preserve single-photo and video frames before previews load, without per-file metadata queries.
 - Record dimensions during downloads, imports and site uploads; provide a bounded one-time fill for older thumbnails.
