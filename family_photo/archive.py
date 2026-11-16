@@ -162,8 +162,9 @@ class Archive(Details):
                     if incoming and not previous:
                         c.execute(media.insert().values(id=uuid.uuid4().hex, group_id=gid,
                             message_id=data["id"], created=data["created"], **incoming))
-                    elif incoming and previous and any(previous[k]!=incoming[k] for k in ('kind','mime','name')):
+                    elif incoming and previous and (any(previous[k]!=incoming[k] for k in ('kind','mime','name')) or incoming.get('width',0)>0 and previous['width']==0):
                         values={k:incoming[k] for k in ('kind','mime','name')}
+                        if not previous['width'] and incoming.get('width') and incoming.get('height'):values.update(width=incoming['width'],height=incoming['height'])
                         if previous['state']!='paused' and incoming['kind']=='sticker' and incoming['mime']=='video/webm':
                             values.update(state='pending',retry_at=0)
                         c.execute(media.update().where(media.c.id==previous['id']).values(**values))
@@ -236,7 +237,7 @@ class Archive(Details):
                     result['errors'] += 1
         return result
 
-    def attach_download(self, item, key, thumb, size):
+    def attach_download(self, item, key, thumb, size, *, dimensions=None):
         with self.transaction() as c:
             self.require_active(c, item["group_id"])
             current = c.execute(select(media).where(media.c.id == item["id"])).mappings().first()
@@ -249,7 +250,7 @@ class Archive(Details):
             if current['object_key']!=key:self.gc(c,current['object_key'])
             if current['thumb_key']!=thumb:self.gc(c,current['thumb_key'])
             c.execute(media.update().where(media.c.id == item["id"]).values(
-                object_key=key, thumb_key=thumb, size=size, state="ready", attempts=0, error=None, retry_at=0))
+                object_key=key, thumb_key=thumb, size=size, state="ready", attempts=0, error=None, retry_at=0, **(dimensions or {})))
             c.execute(garbage.delete().where(garbage.c.key.in_([value for value in (key, thumb) if value])))
             return True
 
@@ -312,7 +313,7 @@ class Archive(Details):
     @staticmethod
     def serial_media(row):
         return {k: row[k] for k in ("id", "group_id", "message_id", "created", "kind", "mime", "name", "size", "state")} | {"has_thumbnail": bool(row["thumb_key"]) and row["kind"] not in {"voice", "audio"},
-            "has_audio_preview": bool(row["thumb_key"]) and row["kind"] in {"voice", "audio"}}
+            "has_audio_preview": bool(row["thumb_key"]) and row["kind"] in {"voice", "audio"}, "width": row.get("width", 0), "height": row.get("height", 0)}
 
     def history(self, gid, before=0, limit=50):
         with self.engine.connect() as c:

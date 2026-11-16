@@ -2,6 +2,13 @@
 
 Application versions are independent of DrG Space; `api_version=1` is the integration protocol. Preview changes are consolidated into their stable release. Versions before 1.0.0 describe retrospective development milestones rather than separately published releases.
 
+## [1.14.4-rc.1] — 2026-11-16 — Preview dimensions in history
+
+- Return stored preview width and height with the existing batched history response.
+- Preserve single-photo and video frames before previews load, without per-file metadata queries.
+- Record dimensions during downloads, imports and site uploads; provide a bounded one-time fill for older thumbnails.
+- Compatibility: API version, keys, environment, sessions and object paths stay unchanged. Existing databases need the two additive columns and the one-time metadata fill described in the update guide before starting the new API/worker. Older readers can ignore the added columns.
+
 ## [1.14.3] — 2026-11-15 — Batched history metadata
 
 - Load chat history with fewer repeated database queries for senders, reactions and attachments.

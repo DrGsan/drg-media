@@ -305,7 +305,8 @@ def import_export(export, archive, progress=None):
                                 archive.objects.put_file(thumb, preview, 'image/webp' if record['_kind']=='sticker' else 'image/jpeg')
                         except (OSError, ValueError, RuntimeError, subprocess.SubprocessError):
                             thumbnail_errors += 1
-                        archive.attach_download(item, key, thumb, path.stat().st_size)
+                        from .preview_dimensions import image_dimensions
+                        archive.attach_download(item, key, thumb, path.stat().st_size, dimensions=image_dimensions(preview) if thumb else None)
                 transferred += 1
         archive.update_group(gid, cursor=record['id'], last_sync=int(time.time()))
         if progress and (index % 100 == 0 or index == len(export.records)):
