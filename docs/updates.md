@@ -1,5 +1,32 @@
 # Updates and compatibility
 
+## 1.14.4
+
+`GET /v1/groups?previews=1` optionally includes `last_message` (or null for an empty group). Only active groups are included. The latest messages and their presentation metadata share bounded batches across groups; clients no longer need a history request for each room. The default catalog and existing history contract remain compatible. No additional schema or environment change is needed for this catalog option.
+
+History media includes optional positive `width` and `height` values. The existing batched media-row query returns them; no preview objects are opened by history serialization. New downloads, imports and site uploads record these values when the preview is already available. Unknown dimensions are zero, allowing older clients and unavailable previews to keep their fallback behavior.
+
+For an existing archive, build the updated image first, preserve a consistent database copy and verify the change on that copy. Stop the worker and API using the same Compose project/files as before. Add only these two columns, retaining all existing rows, keys, sessions and objects. The example uses the configured SQLite or PostgreSQL connection and is safe to repeat:
+
+```sh
+docker compose run --rm --no-deps --entrypoint python api - <<'PY'
+from sqlalchemy import create_engine, inspect, text
+from family_photo.config import Config
+engine = create_engine(Config.from_env().database_url)
+with engine.begin() as connection:
+    names = {column['name'] for column in inspect(connection).get_columns('telegram_media')}
+    for name in ('width', 'height'):
+        if name not in names:
+            connection.execute(text(f'ALTER TABLE telegram_media ADD COLUMN {name} INTEGER NOT NULL DEFAULT 0'))
+engine.dispose()
+PY
+docker compose run --rm --no-deps --entrypoint python api -m family_photo.preview_dimensions --backfill
+```
+
+The fill reads existing thumbnail headers in bounded batches with four readers, updates missing dimensions and old site-upload metadata, and reports aggregate counters. It does not download original videos, re-import Telegram history, rename objects or create a second archive. An unavailable thumbnail remains unknown and is reported. Repeating the fill preserves already recorded dimensions. New installations create both columns normally and need no fill.
+
+Start and verify the updated API, then start a single updated worker. Older API/worker images can read the extended table while ignoring the extra columns; do not remove columns or restore an old database over newly received messages to roll back an application image. Restoring an older database copy requires the same additive preparation before running the new image. Keep previous Compose settings and external volumes. No dependency, environment, encryption-key, object-format or Telegram-login change is required.
+
 ## 1.14.3
 
 History pages batch the metadata for their selected messages in the existing group scope. Sender profiles, reaction participants, custom emoji, attachments and confirmed bot-message presentation retain their behavior. Presentation data exists only for the current page; changes and access revocations remain visible to the next request. Message JSON objects retain their existing paths and are still read individually.

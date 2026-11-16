@@ -124,6 +124,9 @@ async def normalize(message):
         mime = "image/jpeg" if photo else (file.mime_type or "application/octet-stream")
         result["media"] = {"identity": identity, "kind": "video_note" if video_note else "voice" if voice else "audio" if mime.startswith("audio/") else "sticker" if sticker else "animation" if animation else "photo" if mime.startswith("image/") else "video",
             "mime": mime, "name": (file.name or f"{message.id}{file.ext or ''}")[:255], "size": file.size or 0}
+    if result.get('media'):
+        from .preview_dimensions import dimensions
+        result['media'].update(dimensions(getattr(file,'width',None),getattr(file,'height',None)))
     return result
 
 
@@ -528,7 +531,8 @@ class Synchronizer(TelegramDetails):
                     except Exception:
                         if item['kind']=='sticker' and item['mime']=='video/webm':raise
                         pass  # Browser can still open/download the original.
-                    attached=self.archive.attach_download(item, key, thumb_key, Path(path).stat().st_size)
+                    from .preview_dimensions import image_dimensions
+                    attached=self.archive.attach_download(item, key, thumb_key, Path(path).stat().st_size, dimensions=image_dimensions(thumbnail) if thumb_key else None)
                     if attached and gif_item:
                         from .animations import verify_gif
                         verify_gif(self.archive,gif_item|{'object_key':key},gif_header)

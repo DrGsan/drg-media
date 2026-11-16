@@ -143,7 +143,7 @@ class SiteMessaging:
     @staticmethod
     def file(row):
         value=json.loads(row['value'])
-        return {k:value[k] for k in ('name','mime','kind','size','duration','waveform') if k in value}|{'id':row['id'],'state':'ready','url':f"/v1/groups/{row['group_id']}/site-uploads/{row['id']}",
+        return {k:value[k] for k in ('name','mime','kind','size','duration','waveform','width','height') if k in value}|{'id':row['id'],'state':'ready','url':f"/v1/groups/{row['group_id']}/site-uploads/{row['id']}",
             'has_thumbnail':bool(row['thumb_key']),'site_upload':True}
 
     def upload(self,gid,actor,fid,source,name,mode,recording=None):
@@ -207,7 +207,7 @@ class SiteMessaging:
             value={'name':name,'kind':kind,'mime':mime,'size':size,'sha256':digest.hexdigest(),**recording_value}
             with self.archive.engine.connect() as c:old=c.execute(select(site_uploads).where(site_uploads.c.id==fid)).mappings().first()
             if old:
-                if old['group_id']!=gid or old['actor_id']!=actor or json.loads(old['value'])!=value:raise MessagingError('upload_conflict')
+                if old['group_id']!=gid or old['actor_id']!=actor or {k:v for k,v in json.loads(old['value']).items() if k not in {'width','height'}}!=value:raise MessagingError('upload_conflict')
                 return self.file(old)
             with ExitStack() as stack:
                 key=stack.enter_context(self.archive.upload('sitefiles'));thumb=None
@@ -218,6 +218,8 @@ class SiteMessaging:
                     make_thumbnail(path,thumbnail,kind)
                     thumb=stack.enter_context(self.archive.upload('thumbnails'))
                     self.archive.objects.put_file(thumb,thumbnail,'image/jpeg')
+                    from .preview_dimensions import image_dimensions
+                    value.update(image_dimensions(thumbnail))
                 with self.archive.transaction() as c:
                     self.require_send(gid,actor,c)
                     drafts=[json.loads(raw) for raw in c.execute(select(site_uploads.c.value).where(site_uploads.c.actor_id==actor,site_uploads.c.send_id.is_(None))).scalars()]
@@ -352,7 +354,12 @@ class SiteMessaging:
         index=self.attachment_index(job,part['ordinal'])
         if index is not None:
             file=page.uploads.get(job['attachments'][index]) if page is not None else c.execute(select(site_uploads).where(site_uploads.c.id==job['attachments'][index])).mappings().first()
-            if file:result['media']=[self.file(file)]
+            if file:
+                presentation=self.file(file)
+                if not presentation.get('width') and result.get('media'):
+                    from .preview_dimensions import dimensions
+                    presentation.update(dimensions(result['media'][0].get('width'),result['media'][0].get('height')))
+                result['media']=[presentation]
 
     def version(self,c,gid,mid,base,*,page=None):
         part=page.parts.get((gid,mid)) if page is not None else c.execute(select(site_parts).where(site_parts.c.group_id==gid,site_parts.c.message_id==mid)).mappings().first()
@@ -396,7 +403,8 @@ class SiteMessaging:
         if item['object_key']!=file['object_key']:self.archive.gc(c,item['object_key'])
         if item['thumb_key']!=file['thumb_key']:self.archive.gc(c,item['thumb_key'])
         c.execute(media.update().where(media.c.id==item['id']).values(object_key=file['object_key'],thumb_key=file['thumb_key'],
-            size=value['size'],mime=value['mime'],name=value['name'],state='ready',error=None,retry_at=0))
+            size=value['size'],mime=value['mime'],name=value['name'],state='ready',error=None,retry_at=0,
+            **{k:value[k] for k in ('width','height') if k in value}))
 
     def cancel(self,gid,actor,jid):
         with self.archive.transaction() as c:

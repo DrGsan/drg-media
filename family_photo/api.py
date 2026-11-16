@@ -306,9 +306,13 @@ def create_app(config=None, archive=None):
         catalog=archive.group_list()
         health=source_health(archive)
         capabilities=messaging.capabilities(catalog)
-        return {"items": [group | {'connection':source_status(archive,group['id'],group,controls,health=health)} | {k:v for k,v in controls.get(group['id'],{}).items() if k in {'copy_source','copy_created','copy_complete','copy_pending','copy_history_complete'}} | capabilities[group['id']]
+        items = [group | {'connection':source_status(archive,group['id'],group,controls,health=health)} | {k:v for k,v in controls.get(group['id'],{}).items() if k in {'copy_source','copy_created','copy_complete','copy_pending','copy_history_complete'}} | capabilities[group['id']]
                           for group in catalog
-                          if controls.get(group['id'],{}).get('enabled') and controls[group['id']]['delete_at'] is None]}
+                          if controls.get(group['id'],{}).get('enabled') and controls[group['id']]['delete_at'] is None]
+        if request.args.get('previews') == '1':
+            previews = archive.room_previews(items)
+            items = [group | {'last_message': previews[group['id']]} for group in items]
+        return {"items": items}
 
     def require_group(gid):
         archive.expire_messages()

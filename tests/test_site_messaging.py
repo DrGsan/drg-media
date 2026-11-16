@@ -324,3 +324,14 @@ def test_recorded_voice_reuses_queue_originals_permissions_and_sendvoice(messagi
     with archive.transaction() as c:c.execute(bot_access.delete())
     asyncio.run(value.check_access(GID,bot))
     with pytest.raises(MessagingError,match='attachment_not_allowed'):value.upload(GID,ACTOR,uuid.uuid4().hex,io.BytesIO(raw),'Голосовое.'+extension,'preview')
+
+
+def test_visual_upload_dimensions_survive_idempotent_retry_and_history(messaging,archive,client):
+    value,bot=messaging
+    output=io.BytesIO();Image.new('RGB',(360,640),'#5984a8').save(output,'JPEG');body=output.getvalue();fid=uuid.uuid4().hex
+    first=value.upload(GID,ACTOR,fid,io.BytesIO(body),'portrait.jpg','preview')
+    second=value.upload(GID,ACTOR,fid,io.BytesIO(body),'portrait.jpg','preview')
+    assert first==second and (first['width'],first['height'])==(360,640)
+    job=send(value,files=[fid]);asyncio.run(value.tick(bot));job=value.get(job['id']);echo(archive,job)
+    page=client.get('/v1/groups/'+GID+'/messages').json['items']
+    assert (page[0]['media'][0]['width'],page[0]['media'][0]['height'])==(360,640)

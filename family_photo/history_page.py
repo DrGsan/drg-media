@@ -1,7 +1,7 @@
 """Bounded presentation data for one authorized history page, never a shared cache."""
 import json
 from collections import defaultdict
-from sqlalchemy import select
+from sqlalchemy import select, tuple_
 from .db import people, emoji_assets, media, outbox, site_parts, site_sends, site_uploads, group_management
 
 
@@ -21,13 +21,12 @@ class HistoryPage:
                     emojis[gid].add(str(reaction['document_id']))
 
         def scoped(table, column, groups, condition=None):
-            for gid, identities in groups.items():
-                ordered = sorted(identities)
-                for start in range(0, len(ordered), 256):
-                    query = select(table).where(table.c.group_id==gid, column.in_(ordered[start:start+256]))
-                    if condition is not None:
-                        query = query.where(condition)
-                    yield from connection.execute(query).mappings()
+            ordered = sorted((gid, identity) for gid, identities in groups.items() for identity in identities)
+            for start in range(0, len(ordered), 256):
+                query = select(table).where(tuple_(table.c.group_id, column).in_(ordered[start:start+256]))
+                if condition is not None:
+                    query = query.where(condition)
+                yield from connection.execute(query).mappings()
 
         self.people = {(row['group_id'], row['sender_id']):row for row in scoped(people, people.c.sender_id, senders)}
         self.emojis = {(row['group_id'], row['document_id']):row for row in scoped(emoji_assets, emoji_assets.c.document_id, emojis)}
