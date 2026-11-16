@@ -72,3 +72,13 @@ def test_additive_upgrade_and_backfill_preserve_legacy_rows_and_old_reader(archi
     with archive.engine.connect() as c:
         assert [tuple(r) for r in c.execute(select(*legacy).order_by(media.c.id))]==before
         assert c.execute(select(media.c.width,media.c.height).where(media.c.id==fid)).one()==(360,640)
+
+
+def test_presentation_dimensions_do_not_rewrite_unchanged_source_history(archive):
+    from conftest import photo
+    from family_photo.db import messages
+    source=photo();archive.ingest('-1001',source)
+    with archive.engine.connect() as c:before=dict(c.execute(select(messages)).mappings().one())
+    source['media'].update(width=360,height=640);archive.ingest('-1001',source)
+    with archive.engine.connect() as c:after=dict(c.execute(select(messages)).mappings().one())
+    assert before==after,'adding dimensions must not change fingerprints, versions or content keys'

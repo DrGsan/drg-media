@@ -124,7 +124,11 @@ class Archive(Details):
             with self.transaction() as c: self.require_active(c, gid)
             # Also correct earlier forwards and snapshots; all IDs and bytes stay.
             classify(self, [data['media']])
-        fingerprint = hashlib.sha256(json.dumps(data, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
+        # Preview geometry is presentation metadata, not a source-message edit.
+        identity_data = data
+        if data.get('media'):
+            identity_data = dict(data, media={k:v for k,v in data['media'].items() if k not in {'width','height'}})
+        fingerprint = hashlib.sha256(json.dumps(identity_data, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
         condition = and_(messages.c.group_id == gid, messages.c.id == data["id"])
         with self.engine.connect() as c:
             old = c.execute(select(messages).where(condition)).mappings().first()
