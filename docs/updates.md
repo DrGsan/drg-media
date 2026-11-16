@@ -1,6 +1,6 @@
 # Updates and compatibility
 
-## 1.14.4 preview
+## 1.14.4
 
 `GET /v1/groups?previews=1` optionally includes `last_message` (or null for an empty group). Only active groups are included. The latest messages and their presentation metadata share bounded batches across groups; clients no longer need a history request for each room. The default catalog and existing history contract remain compatible. No additional schema or environment change is needed for this catalog option.
 
