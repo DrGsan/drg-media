@@ -2,6 +2,12 @@
 
 Application versions are independent of DrG Space; `api_version=1` is the integration protocol. Preview changes are consolidated into their stable release. Versions before 1.0.0 describe retrospective development milestones rather than separately published releases.
 
+## [1.14.5-rc.1] — 2026-11-17 — Runtime security updates
+
+- Update image decoding, certificate trust and ASN.1 dependencies to patched releases.
+- Preserve existing archives, previews, Telegram sessions and Space integration.
+- Compatibility: API version, database schema, keys, environment and object paths are unchanged. No migration or original-file rewrite is required. Update API and worker together with the existing Compose settings.
+
 ## [1.14.4] — 2026-11-16 — Preview dimensions in history
 
 - Include optional latest-message previews in the group catalog using bounded cross-group metadata queries.

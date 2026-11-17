@@ -20,7 +20,7 @@ Telegram content and sessions are user-supplied. Optional Redis/S3 servers are e
 | blinker | 1.9.0 | License :: OSI Approved :: MIT License |
 | boto3 | 1.43.114 | See original license text |
 | botocore | 1.43.114 | See original license text |
-| certifi | 2026.7.22 | License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0) |
+| certifi | 2026.10.23 | License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0) |
 | click | 8.5.0 | BSD-3-Clause |
 | gunicorn | 26.2.0 | MIT |
 | h11 | 0.16.0 | License :: OSI Approved :: MIT License |
@@ -30,11 +30,11 @@ Telegram content and sessions are user-supplied. Optional Redis/S3 servers are e
 | itsdangerous | 2.2.0 | License :: OSI Approved :: BSD License |
 | jmespath | 1.1.0 | License :: OSI Approved :: MIT License |
 | packaging | 26.3 | Apache-2.0 OR BSD-2-Clause |
-| pillow | 12.3.0 | MIT-CMU |
+| pillow | 13.0.0 | MIT-CMU |
 | psycopg-binary | 3.3.6 | LGPL-3.0-only |
 | psycopg | 3.3.6 | LGPL-3.0-only |
 | pyaes | 1.6.1 | License :: OSI Approved :: MIT License |
-| pyasn1 | 0.6.4 | See original license text |
+| pyasn1 | 0.6.5 | See original license text |
 | python-dateutil | 2.9.0.post0 | License :: OSI Approved :: BSD License; License :: OSI Approved :: Apache Software License |
 | rsa | 4.9.1 | License :: OSI Approved :: Apache Software License |
 | redis | 8.1.0 | MIT |

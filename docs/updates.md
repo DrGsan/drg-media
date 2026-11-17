@@ -1,5 +1,9 @@
 # Updates and compatibility
 
+## 1.14.5-rc.1 · Preview
+
+Runtime pins move to Pillow 13.0.0, certifi 2026.10.23 and pyasn1 0.6.5. The supported Pillow range is now 13.x. The archive schema, stored image dimensions, originals, session, keys, API version and environment remain unchanged; no migration or reprocessing is required. Rebuild and update API and worker together using the same Compose files and volumes. Keep the previous image available until acceptance.
+
 ## 1.14.4
 
 `GET /v1/groups?previews=1` optionally includes `last_message` (or null for an empty group). Only active groups are included. The latest messages and their presentation metadata share bounded batches across groups; clients no longer need a history request for each room. The default catalog and existing history contract remain compatible. No additional schema or environment change is needed for this catalog option.

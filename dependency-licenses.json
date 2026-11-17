@@ -124,11 +124,11 @@
     },
     {
       "name": "certifi",
-      "version": "2026.7.22",
+      "version": "2026.10.23",
       "license": "License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)",
       "notices": [
         {
-          "path": "licenses/python/certifi-2026.7.22/licenses/LICENSE",
+          "path": "licenses/python/certifi-2026.10.23/licenses/LICENSE",
           "sha256": "e93716da6b9c0d5a4a1df60fe695b370f0695603d21f6f83f053e42cfc10caf7"
         }
       ]
@@ -242,11 +242,11 @@
     },
     {
       "name": "pillow",
-      "version": "12.3.0",
+      "version": "13.0.0",
       "license": "MIT-CMU",
       "notices": [
         {
-          "path": "licenses/python/pillow-12.3.0/licenses/LICENSE",
+          "path": "licenses/python/pillow-13.0.0/licenses/LICENSE",
           "sha256": "dda12a98c1979cf3d94df1cff45d27a4cb3f04a60c76f76902ac54cac03ec0ce"
         }
       ]
@@ -286,11 +286,11 @@
     },
     {
       "name": "pyasn1",
-      "version": "0.6.4",
+      "version": "0.6.5",
       "license": "See original license text",
       "notices": [
         {
-          "path": "licenses/python/pyasn1-0.6.4/licenses/LICENSE.rst",
+          "path": "licenses/python/pyasn1-0.6.5/licenses/LICENSE.rst",
           "sha256": "2aad5fc00f705c4a1addb83eed10a6a75d286a3779f0cf8519d87e62bc4735fd"
         }
       ]
