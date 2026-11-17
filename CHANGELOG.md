@@ -2,7 +2,7 @@
 
 Application versions are independent of DrG Space; `api_version=1` is the integration protocol. Preview changes are consolidated into their stable release. Versions before 1.0.0 describe retrospective development milestones rather than separately published releases.
 
-## [1.14.5-rc.1] — 2026-11-17 — Runtime security updates
+## [1.14.5] — 2026-11-17 — Runtime security updates
 
 - Update image decoding, certificate trust and ASN.1 dependencies to patched releases.
 - Preserve existing archives, previews, Telegram sessions and Space integration.

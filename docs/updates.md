@@ -1,6 +1,6 @@
 # Updates and compatibility
 
-## 1.14.5-rc.1 · Preview
+## 1.14.5
 
 Runtime pins move to Pillow 13.0.0, certifi 2026.10.23 and pyasn1 0.6.5. The supported Pillow range is now 13.x. The archive schema, stored image dimensions, originals, session, keys, API version and environment remain unchanged; no migration or reprocessing is required. Rebuild and update API and worker together using the same Compose files and volumes. Keep the previous image available until acceptance.
 
