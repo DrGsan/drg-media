@@ -11,8 +11,9 @@ license-files = ["LICENSE"]
 requires-python = ">=3.12"
 dependencies = [
   "Flask>=3.1,<4", "SQLAlchemy>=2.0,<3", "Telethon>=1.42,<2",
-  "httpx>=0.28,<1", "boto3>=1.40,<2", "Pillow>=12,<13",
+  "httpx>=0.28,<1", "boto3>=1.40,<2", "Pillow>=13,<14",
   "psycopg[binary]>=3.2,<4", "gunicorn>=23,<28",
+  "certifi>=2026.10.23", "pyasn1>=0.6.5,<0.7",
 ]
 
 [project.optional-dependencies]
