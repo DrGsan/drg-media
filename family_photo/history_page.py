@@ -1,14 +1,18 @@
 """Bounded presentation data for one authorized history page, never a shared cache."""
 import json
 from collections import defaultdict
+from functools import cache
 from sqlalchemy import select, tuple_
 from .db import people, emoji_assets, media, outbox, site_parts, site_sends, site_uploads, group_management
 
 
 class HistoryPage:
-    def __init__(self, archive, connection, rows):
+    def __init__(self, archive, connection, rows, *, reuse_json=False):
         self.rows = {(row['group_id'], row['id']):row for row in rows}
-        self.contents = {key:archive.objects.read_json(row['content_key']) for key,row in self.rows.items()}
+        read_json = archive.objects.read_json
+        # Catalog snapshots can share objects with their sources in this batch.
+        self.read_json = cache(read_json) if reuse_json else read_json
+        self.contents = {key:self.read_json(row['content_key']) for key,row in self.rows.items()}
         ids, senders, emojis = defaultdict(set), defaultdict(set), defaultdict(set)
         for (gid, mid), row in self.rows.items():
             ids[gid].add(mid)

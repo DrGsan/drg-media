@@ -345,11 +345,12 @@ class SiteMessaging:
         part=page.parts.get((row['group_id'],row['id'])) if page is not None else c.execute(select(site_parts).where(site_parts.c.group_id==row['group_id'],site_parts.c.message_id==row['id'])).mappings().first()
         if not part or str(part['bot_id'])!=row['sender_id']:return
         job=self.get(part['send_id'],c,page=page)
+        read_json=page.read_json if page is not None else self.archive.objects.read_json
         result['version']=self.version(c,row['group_id'],row['id'],row['fingerprint'],page=page)
         result.update(site_actor_id=job['actor_id'],site_send_id=job['id'],site_author=job['author'],site_revision=job['revision'],
             site_primary=part['ordinal']==0,
             site_editable_until=job.get('sent_at',job['created'])+EDIT_SECONDS,site_edit_state=job['state'],site_error=job.get('error'),sender=job['author'],sender_id='site:'+job['actor_id'],
-            text=self.archive.objects.read_json(job['content_key'])['text'] if part['ordinal']==0 else '',edited=job['edited'],album_id='site:'+job['id'] if job['attachments'] else None)
+            text=read_json(job['content_key'])['text'] if part['ordinal']==0 else '',edited=job['edited'],album_id='site:'+job['id'] if job['attachments'] else None)
         result['custom_emojis']=[]
         index=self.attachment_index(job,part['ordinal'])
         if index is not None:

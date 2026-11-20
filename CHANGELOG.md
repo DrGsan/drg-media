@@ -2,6 +2,12 @@
 
 Application versions are independent of DrG Space; `api_version=1` is the integration protocol. Preview changes are consolidated into their stable release. Versions before 1.0.0 describe retrospective development milestones rather than separately published releases.
 
+## [1.14.6] — 2026-11-20 — Faster previews for copied groups
+
+- Reuse a decoded message object across group previews that reference the same object within a catalog batch.
+- Fetch the current preview on each request so that source edits, snapshots and group access retain their existing behavior.
+- Update the API and worker together with the existing Compose settings. The release requires no migration or object rewrite.
+
 ## [1.14.5] — 2026-11-17 — Runtime security updates
 
 - Update image decoding, certificate trust and ASN.1 dependencies to patched releases.

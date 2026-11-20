@@ -299,7 +299,7 @@ class Archive(Details):
             for start in range(0, len(identities), 256):
                 rows = list(c.execute(select(messages).where(messages.c.deleted == False,
                     tuple_(messages.c.group_id, messages.c.id).in_(identities[start:start+256]))).mappings())
-                page = HistoryPage(self, c, rows)
+                page = HistoryPage(self, c, rows, reuse_json=True)
                 for row in rows:
                     item = self.serialize(c, row, page=page)
                     result[row['group_id']] = {key: item[key] for key in ('id', 'created', 'sender', 'text')} | {
