@@ -162,6 +162,54 @@ def test_copies_preserve_site_files_and_attribution_after_live_deletion(messagin
     with pytest.raises(Exception):b''.join(archive.objects.read(key))
 
 
+def test_catalog_previews_reuse_shared_json_within_each_request(messaging, archive, client, monkeypatch):
+    value, bot = messaging
+    job = send(value)
+    asyncio.run(value.tick(bot))
+    job = value.get(job['id'])
+    echo(archive, job)
+    copies = [archive.registry.copy(GID, uuid.uuid4().hex) for _ in range(2)]
+
+    reads = []
+    read_json = archive.objects.read_json
+
+    def counted(key):
+        reads.append(key)
+        return read_json(key)
+
+    monkeypatch.setattr(archive.objects, 'read_json', counted)
+
+    def previews():
+        reads.clear()
+        response = client.get('/v1/groups?previews=1')
+        assert response.status_code == 200
+        assert len(reads) == len(set(reads))
+        return {group['id']: group['last_message'] for group in response.json['items']}
+
+    first = previews()
+    assert len(reads) == 2
+    assert all(first[gid]['text'] == 'Привет' for gid in [GID, *copies])
+    assert previews() == first
+    assert len(reads) == 2
+
+    value.edit(GID, ACTOR, job['message_ids'][0], 'Новый текст', 0, 'catalog-edit')
+    asyncio.run(value.tick(bot))
+    updated = previews()
+    assert updated[GID]['text'] == 'Новый текст'
+    assert all(updated[gid] == first[gid] for gid in copies)
+
+    archive.delete_messages(GID, job['message_ids'])
+    archive.registry.action(copies[1], 'disable')
+    archive.collect_garbage()
+    after = previews()
+    assert after[GID] is None and after[copies[0]] == first[copies[0]]
+    assert copies[1] not in after and len(reads) == 2
+
+    reads.clear()
+    assert client.get(f'/v1/groups/{copies[1]}/messages').status_code == 404
+    assert reads == []
+
+
 def test_cancel_releases_staged_file_and_expired_drafts_are_cleaned(messaging,archive,monkeypatch):
     value,_=messaging;file=upload(value)
     with archive.engine.connect() as c:key=c.execute(select(site_uploads.c.object_key).where(site_uploads.c.id==file['id'])).scalar_one()
